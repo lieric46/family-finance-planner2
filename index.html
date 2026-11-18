@@ -30,7 +30,7 @@
     line-height: 1.6;
     padding: 16px;
   }
-  .container { max-width: 1240px; margin: 0 auto; }
+  .container { max-width: 1260px; margin: 0 auto; }
   header {
     background: linear-gradient(135deg, #1e3a8a 0%, #1a56db 100%);
     color: #fff;
@@ -56,11 +56,11 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 420px 1fr;
     gap: 20px;
     align-items: start;
   }
-  @media (max-width: 960px) {
+  @media (max-width: 980px) {
     .grid { grid-template-columns: 1fr; }
   }
   .card {
@@ -81,7 +81,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .form-group { margin-bottom: 13px; }
+  .form-group { margin-bottom: 12px; }
   .form-group label {
     display: flex;
     justify-content: space-between;
@@ -91,6 +91,14 @@
     margin-bottom: 4px;
   }
   .form-group label span.val-tag { color: var(--primary); font-weight: 700; }
+  .two-col-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    .two-col-inputs { grid-template-columns: 1fr; }
+  }
   input[type="number"], select {
     width: 100%;
     padding: 8px 11px;
@@ -104,7 +112,7 @@
   input[type="number"]::placeholder {
     color: #9ca3af;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 12.5px;
   }
   input[type="number"]:focus, select:focus {
     outline: none;
@@ -129,7 +137,7 @@
   .btn-row {
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .btn-analyze {
     flex: 1;
@@ -160,11 +168,11 @@
   /* 右侧看板 */
   .kpi-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
-  @media (max-width: 640px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
   .kpi-box {
     background: var(--card);
     padding: 14px;
@@ -226,12 +234,21 @@
   .strategy-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
   .strategy-desc { font-size: 13.5px; color: #374151; }
 
+  /* 存量结构对比条 */
+  .structure-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+  }
   .alloc-bar {
     height: 16px;
     border-radius: 99px;
     overflow: hidden;
     display: flex;
-    margin: 14px 0;
+    margin: 12px 0;
     background: #e5e7eb;
   }
   .alloc-seg { height: 100%; transition: width 0.35s ease; }
@@ -257,6 +274,7 @@
   .alloc-name { font-size: 13px; font-weight: 700; }
   .alloc-pct { font-size: 13px; font-weight: 800; color: var(--primary); }
   .alloc-amt { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .alloc-diff { font-size: 11.5px; font-weight: 700; margin-bottom: 4px; }
   .alloc-note { font-size: 12px; color: var(--muted); }
 
   .step-card {
@@ -327,7 +345,7 @@
 <div class="container">
   <header>
     <h1>家庭财务体检与资产配置规划器</h1>
-    <p>根据您的家庭收支、负债与风险承受意愿，提供家庭财务健康度测算、大类资产配置比例参考与常见风险提示</p>
+    <p>完整统计家庭金融资产、房产车辆与负债结构，提供全盘财务健康度测算、金融资产配置参考模型与常见风险提示</p>
     <div class="badge-row">
       <span class="privacy-badge">🔒 纯本地浏览器实时测算，财务数据不上传服务器</span>
       <span class="privacy-badge">ℹ️ 仅供财商科普与数学模型测算参考，不构成投资建议</span>
@@ -335,38 +353,62 @@
   </header>
 
   <div class="grid">
-    <!-- 左侧录入区（默认全部空白） -->
+    <!-- 左侧录入区（完整资产负债表 + 收支） -->
     <div class="card">
       <div class="card-title">
         <span>1. 家庭财务参数录入</span>
         <span style="font-size:12px;color:var(--primary);font-weight:600;">录入即实时测算</span>
       </div>
 
-      <div class="section-divider first">存量资产与负债</div>
+      <div class="section-divider first">一、金融资产明细（可投资与流动资产）</div>
       <div class="form-group">
-        <label>现有可用现金/定期存款 (元)</label>
-        <input type="number" id="cashSavings" value="" placeholder="请输入现有存款总额，无则填 0" step="10000" oninput="runEngine()">
+        <label>现金 / 活期 / 定期存款 (元)</label>
+        <input type="number" id="cashSavings" value="" placeholder="请输入现金与存款总额，无则填 0" step="10000" oninput="runEngine()">
       </div>
-      <div class="form-group">
-        <label>剩余总负债/贷款余额 (元)</label>
-        <input type="number" id="totalDebt" value="" placeholder="请输入剩余贷款总额，无则填 0" step="10000" oninput="runEngine()">
-      </div>
-
-      <div class="section-divider">每月家庭收入明细</div>
-      <div class="form-group">
-        <label>本人税后月薪 (元)</label>
-        <input type="number" id="myIncome" value="" placeholder="请输入本人税后月收入" step="500" oninput="runEngine()">
-      </div>
-      <div class="form-group">
-        <label>配偶税后月薪 (元)</label>
-        <input type="number" id="spouseIncome" value="" placeholder="请输入配偶税后月收入，无则留空" step="500" oninput="runEngine()">
-      </div>
-      <div class="form-group">
-        <label>每月额外/副业/奖金收入 (元)</label>
-        <input type="number" id="extraIncome" value="" placeholder="请输入月均额外收入，无则留空" step="1000" oninput="runEngine()">
+      <div class="two-col-inputs">
+        <div class="form-group">
+          <label>现有债券 / 稳健理财 (元)</label>
+          <input type="number" id="existingBond" value="" placeholder="国债/纯债/固收理财" step="10000" oninput="runEngine()">
+        </div>
+        <div class="form-group">
+          <label>现有股票 / 偏股基金 (元)</label>
+          <input type="number" id="existingEquity" value="" placeholder="股票/指数/混合基金" step="10000" oninput="runEngine()">
+        </div>
       </div>
 
-      <div class="section-divider">每月刚性支出与还贷</div>
+      <div class="section-divider">二、实物资产与总负债明细</div>
+      <div class="two-col-inputs">
+        <div class="form-group">
+          <label>房产当前预估总市值 (元)</label>
+          <input type="number" id="houseValue" value="" placeholder="自住+投资房产总市值" step="50000" oninput="runEngine()">
+        </div>
+        <div class="form-group">
+          <label>车辆当前预估残值 (元)</label>
+          <input type="number" id="carValue" value="" placeholder="名下车辆当前二手估价" step="10000" oninput="runEngine()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>家庭剩余总负债 / 贷款本金余额 (元)</label>
+        <input type="number" id="totalDebt" value="" placeholder="含房贷、车贷、消费贷等剩余总本金，无则填 0" step="10000" oninput="runEngine()">
+      </div>
+
+      <div class="section-divider">三、每月家庭收入明细</div>
+      <div class="two-col-inputs">
+        <div class="form-group">
+          <label>本人税后月薪 (元)</label>
+          <input type="number" id="myIncome" value="" placeholder="本人税后月收入" step="500" oninput="runEngine()">
+        </div>
+        <div class="form-group">
+          <label>配偶税后月薪 (元)</label>
+          <input type="number" id="spouseIncome" value="" placeholder="配偶税后月收入" step="500" oninput="runEngine()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>每月额外 / 副业 / 租金 / 奖金收入 (元)</label>
+        <input type="number" id="extraIncome" value="" placeholder="月均额外收入，无则留空" step="1000" oninput="runEngine()">
+      </div>
+
+      <div class="section-divider">四、每月刚性支出与还贷</div>
       <div class="form-group">
         <label>每月贷款月供（房贷/车贷/消费贷等） <span class="val-tag" id="lblLoan">未填</span></label>
         <input type="number" id="loanPayment" value="" placeholder="请输入每月还贷总额，无则填 0" step="200" oninput="syncSlider('loanPayment','rngLoan');runEngine()">
@@ -388,7 +430,7 @@
         <input type="range" id="rngMisc" min="0" max="20000" step="100" value="0" oninput="syncInput('rngMisc','miscExpense');runEngine()">
       </div>
 
-      <div class="section-divider">个人风险承受偏好</div>
+      <div class="section-divider">五、个人风险承受偏好</div>
       <div class="form-group">
         <label>风险偏好等级</label>
         <select id="riskProfile" onchange="runEngine()">
@@ -399,24 +441,34 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-analyze" onclick="runEngine(true)">🔄 生成家庭财务体检报告</button>
+        <button class="btn-analyze" onclick="runEngine(true)">🔄 生成全盘财务体检报告</button>
         <button class="btn-reset" onclick="clearAll()">清空重填</button>
       </div>
     </div>
 
     <!-- 右侧动态输出区 -->
     <div id="outputPanel">
-      <!-- 顶部4个核心指标 -->
+      <!-- 顶部6个核心指标（3x2 网格，全面反映资产负债表与现金流） -->
       <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">家庭总资产（金融+实物）</div>
+          <div class="kpi-value" id="kpiTotalAsset">--</div>
+          <div class="kpi-sub" id="kpiAssetSplit" style="color:var(--muted);">等待录入资产</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">家庭净资产（剔除负债）</div>
+          <div class="kpi-value" id="kpiNetWorth">--</div>
+          <div class="kpi-sub" id="kpiLeverage" style="color:var(--muted);">资产负债率 --</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">可配置金融资产总额</div>
+          <div class="kpi-value" id="kpiFinAsset">--</div>
+          <div class="kpi-sub" id="kpiFinRatio" style="color:var(--muted);">占总资产 --</div>
+        </div>
         <div class="kpi-box">
           <div class="kpi-label">每月家庭总收入</div>
           <div class="kpi-value" id="kpiIncome">--</div>
           <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">等待录入收入</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">每月刚性总支出</div>
-          <div class="kpi-value" id="kpiExpense">--</div>
-          <div class="kpi-sub" id="kpiDebtRatio" style="color:var(--muted);">等待录入支出</div>
         </div>
         <div class="kpi-box">
           <div class="kpi-label">每月净结余 (可规划空间)</div>
@@ -424,7 +476,7 @@
           <div class="kpi-sub" id="kpiSaveRate" style="color:var(--muted);">--</div>
         </div>
         <div class="kpi-box">
-          <div class="kpi-label">应急备用金覆盖周期</div>
+          <div class="kpi-label">现金应急覆盖周期</div>
           <div class="kpi-value" id="kpiRunway">--</div>
           <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--muted);">--</div>
         </div>
@@ -433,31 +485,35 @@
       <!-- 系统自动判定当前家庭财务状况画像 -->
       <div class="profile-verdict" id="profileVerdictCard">
         <div class="profile-verdict-left">
-          <div class="profile-verdict-label">📋 根据您录入的财务参数测算，当前家庭财务特征倾向于：</div>
+          <div class="profile-verdict-label">📋 根据您录入的资产负债与收支参数测算，当前家庭财务特征倾向于：</div>
           <div class="profile-verdict-name" id="profileName">
-            <span style="color:var(--muted);">⏳ 待录入家庭收支数据后自动识别</span>
+            <span style="color:var(--muted);">⏳ 待录入家庭资产与收支数据后自动识别</span>
             <span class="profile-pill" id="profileRiskTag">稳健平衡偏好</span>
           </div>
-          <div class="profile-verdict-summary" id="profileSummary">请在左侧输入您的存量资金、月收入与月支出，系统将为您测算财务健康度并展示大类资产配置参考模型。</div>
+          <div class="profile-verdict-summary" id="profileSummary">请在左侧完整输入您的金融资产（存款/股票/债券）、实物资产（房产/车辆）、负债及月度收支，系统将立即为您做全盘体检。</div>
         </div>
       </div>
 
       <!-- 2. 实时财务体检与动态配置模型 -->
       <div class="card">
         <div class="card-title">
-          <span>2. 实时财务体检与大类资产配置参考模型</span>
+          <span>2. 全盘资产负债体检与金融资产配置模型</span>
           <span id="regimeBadge" style="font-size:12px;color:var(--muted);font-weight:700;">等待数据输入</span>
         </div>
 
         <div id="strategyBanner" class="strategy-banner idle">
           <div class="strategy-tag" id="strategyTag">未启动测算</div>
-          <div class="strategy-title" id="strategyTitle">请在左侧录入您的基础财务数据</div>
-          <div class="strategy-desc" id="strategyDesc">支持实时录入存款、负债、家庭月收入与月度开销。所有计算均在本地浏览器完成，输入后将自动生成大类资产比例测算结果（仅供参考）。</div>
+          <div class="strategy-title" id="strategyTitle">请在左侧录入您的家庭资产、负债与收支数据</div>
+          <div class="strategy-desc" id="strategyDesc">支持分别录入现金存款、股票基金、债券理财、房产车辆市值及总负债。系统会综合评估“实物沉淀比例”与“现金流健康度”，自动输出金融资产再平衡参考方案。</div>
+        </div>
+
+        <div class="structure-box" id="assetStructureNote">
+          <strong>🏠 家庭资产结构透视：</strong>录入资产数据后，此处将自动分析您的“房产/车辆等实物资产”与“可生息金融资产”比例是否失衡。
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;">
-          <span>存量资金（<span id="dispTotalCash">¥0</span>）大类资产配置比例参考：</span>
-          <span style="color:var(--muted);font-size:12px;">随风险偏好与收支结构动态调整</span>
+          <span>可投资金融资产（<span id="dispTotalFin">¥0</span>）动态四盘配置参考：</span>
+          <span style="color:var(--muted);font-size:12px;">对比您当前持仓自动计算调仓差额</span>
         </div>
         <div class="alloc-bar" id="allocBar"></div>
         <div class="alloc-grid" id="allocGrid"></div>
@@ -470,7 +526,7 @@
       <!-- 3. 规划落地参考步骤与常见风险提示 -->
       <div class="card">
         <div class="card-title">
-          <span>3. 规划落地参考步骤与常见风险提示</span>
+          <span>3. 存量调仓与增量规划参考步骤（含风险提示）</span>
           <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 市场有风险，决策需谨慎</span>
         </div>
         <div id="actionStepsContainer"></div>
@@ -479,8 +535,8 @@
       <!-- 4. 长周期复利数学模型演示 -->
       <div class="card">
         <div class="card-title">
-          <span>4. 长周期复利数学模型演示（非实际收益承诺）</span>
-          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后模拟测算总值：¥0</span>
+          <span>4. 金融资产长周期复利数学模型演示（非实际收益承诺）</span>
+          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后金融资产测算总值：¥0</span>
         </div>
         <div class="sim-controls">
           <div>
@@ -507,17 +563,17 @@
         </div>
         <canvas id="growthCanvas" width="760" height="240"></canvas>
         <div style="display:flex;justify-content:center;gap:20px;font-size:12px;margin-top:8px;color:var(--muted);">
-          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>模拟测算总值</span>
-          <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>累计投入本金</span>
+          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>金融资产模拟总值（不含房产车辆）</span>
+          <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>累计投入金融本金</span>
         </div>
       </div>
 
       <!-- 底部合规免责声明 -->
       <div class="disclaimer-footer">
         <strong>免责与风险提示声明：</strong><br>
-        1. 本工具仅作为家庭收支梳理、财务健康度自我评估及大类资产配置知识普及的辅助计算器，<strong>不构成任何形式的证券、基金、保险、银行理财或贵金属投资建议</strong>，亦不代表任何持牌金融机构的官方意见。<br>
-        2. 页面中展示的配置比例、假设年化回报率及复利曲线均为基于通用财务规划理论的<strong>纯数学模型演示，不构成对未来实际收益的预测或保本保息承诺</strong>。<br>
-        3. 金融市场存在价格波动与本金亏损风险，过往表现不代表未来。您在做出任何实际投资或提前还贷决策前，请结合自身真实风险承受能力，审慎阅读相关金融产品的官方说明书及风险揭示书，并建议咨询具备合法资质的持牌金融机构专业人士。
+        1. 本工具仅作为家庭资产负债表梳理、财务健康度自我评估及大类资产配置知识普及的辅助计算器，<strong>不构成任何形式的证券、基金、保险、银行理财、房产或贵金属投资建议</strong>，亦不代表任何持牌金融机构的官方意见。<br>
+        2. 页面中展示的配置比例、调仓差额、假设年化回报率及复利曲线均为基于通用财务规划理论的<strong>纯数学模型演示，不构成对未来实际收益的预测或保本保息承诺</strong>。<br>
+        3. 金融市场与不动产市场均存在价格波动与本金亏损风险，过往表现不代表未来。您在做出任何实际投资、资产置换或提前还贷决策前，请结合自身真实风险承受能力，审慎阅读相关金融产品的官方说明书及风险揭示书，并建议咨询具备合法资质的持牌金融机构专业人士。
       </div>
     </div>
   </div>
@@ -525,6 +581,7 @@
 
 <script>
   const fmt = (n) => '¥' + Math.round(n).toLocaleString('zh-CN');
+  const fmtSigned = (n) => (n >= 0 ? '+' : '-') + '¥' + Math.abs(Math.round(n)).toLocaleString('zh-CN');
 
   function syncSlider(inpId, rngId) {
     const val = parseFloat(document.getElementById(inpId).value);
@@ -535,7 +592,12 @@
   }
 
   function clearAll() {
-    ['cashSavings', 'totalDebt', 'myIncome', 'spouseIncome', 'extraIncome', 'loanPayment', 'rentPayment', 'carUtility', 'miscExpense'].forEach(id => {
+    [
+      'cashSavings', 'existingBond', 'existingEquity',
+      'houseValue', 'carValue', 'totalDebt',
+      'myIncome', 'spouseIncome', 'extraIncome',
+      'loanPayment', 'rentPayment', 'carUtility', 'miscExpense'
+    ].forEach(id => {
       document.getElementById(id).value = '';
     });
     ['rngLoan', 'rngRent', 'rngCar', 'rngMisc'].forEach(id => {
@@ -546,17 +608,16 @@
   }
 
   function runEngine(animate = false) {
-    const rawCash = document.getElementById('cashSavings').value.trim();
-    const rawDebt = document.getElementById('totalDebt').value.trim();
-    const rawMy   = document.getElementById('myIncome').value.trim();
-    const rawSp   = document.getElementById('spouseIncome').value.trim();
-    const rawEx   = document.getElementById('extraIncome').value.trim();
-    const rawLoan = document.getElementById('loanPayment').value.trim();
-    const rawRent = document.getElementById('rentPayment').value.trim();
-    const rawCar  = document.getElementById('carUtility').value.trim();
-    const rawMisc = document.getElementById('miscExpense').value.trim();
+    const ids = [
+      'cashSavings', 'existingBond', 'existingEquity',
+      'houseValue', 'carValue', 'totalDebt',
+      'myIncome', 'spouseIncome', 'extraIncome',
+      'loanPayment', 'rentPayment', 'carUtility', 'miscExpense'
+    ];
+    const raw = {};
+    ids.forEach(id => raw[id] = document.getElementById(id).value.trim());
 
-    const hasAnyInput = [rawCash, rawDebt, rawMy, rawSp, rawEx, rawLoan, rawRent, rawCar, rawMisc].some(v => v !== '');
+    const hasAnyInput = Object.values(raw).some(v => v !== '');
 
     const risk = document.getElementById('riskProfile').value;
     const riskTextMap = {
@@ -566,16 +627,22 @@
     };
     document.getElementById('profileRiskTag').innerText = riskTextMap[risk];
 
-    document.getElementById('lblLoan').innerText = rawLoan === '' ? '未填' : fmt(parseFloat(rawLoan) || 0);
-    document.getElementById('lblRent').innerText = rawRent === '' ? '未填' : fmt(parseFloat(rawRent) || 0);
-    document.getElementById('lblCar').innerText  = rawCar  === '' ? '未填' : fmt(parseFloat(rawCar)  || 0);
-    document.getElementById('lblMisc').innerText = rawMisc === '' ? '未填' : fmt(parseFloat(rawMisc) || 0);
+    document.getElementById('lblLoan').innerText = raw.loanPayment === '' ? '未填' : fmt(parseFloat(raw.loanPayment) || 0);
+    document.getElementById('lblRent').innerText = raw.rentPayment === '' ? '未填' : fmt(parseFloat(raw.rentPayment) || 0);
+    document.getElementById('lblCar').innerText  = raw.carUtility  === '' ? '未填' : fmt(parseFloat(raw.carUtility)  || 0);
+    document.getElementById('lblMisc').innerText = raw.miscExpense === '' ? '未填' : fmt(parseFloat(raw.miscExpense) || 0);
 
     if (!hasAnyInput) {
+      document.getElementById('kpiTotalAsset').innerText = '--';
+      document.getElementById('kpiAssetSplit').innerText = '等待录入资产';
+      document.getElementById('kpiNetWorth').innerText = '--';
+      document.getElementById('kpiNetWorth').style.color = 'var(--text)';
+      document.getElementById('kpiLeverage').innerText = '资产负债率 --';
+      document.getElementById('kpiFinAsset').innerText = '--';
+      document.getElementById('kpiFinRatio').innerText = '占总资产 --';
+
       document.getElementById('kpiIncome').innerText = '--';
       document.getElementById('kpiStableRatio').innerText = '等待录入收入';
-      document.getElementById('kpiExpense').innerText = '--';
-      document.getElementById('kpiDebtRatio').innerText = '等待录入支出';
       const savEl = document.getElementById('kpiSavings');
       savEl.innerText = '--';
       savEl.style.color = 'var(--text)';
@@ -586,22 +653,23 @@
       document.getElementById('kpiRunwayTag').style.color = 'var(--muted)';
 
       const pNameEl = document.getElementById('profileName');
-      pNameEl.firstElementChild.innerText = '⏳ 待录入家庭收支数据后自动识别';
+      pNameEl.firstElementChild.innerText = '⏳ 待录入家庭资产与收支数据后自动识别';
       pNameEl.firstElementChild.style.color = 'var(--muted)';
-      document.getElementById('profileSummary').innerText = '请在左侧输入您的存量资金、月收入与月支出，系统将为您测算财务健康度并展示大类资产配置参考模型。';
+      document.getElementById('profileSummary').innerText = '请在左侧完整输入您的金融资产（存款/股票/债券）、实物资产（房产/车辆）、负债及月度收支，系统将立即为您做全盘体检。';
 
       document.getElementById('regimeBadge').innerText = '等待数据输入';
       const banner = document.getElementById('strategyBanner');
       banner.className = 'strategy-banner idle';
       document.getElementById('strategyTag').innerText = '未启动测算';
-      document.getElementById('strategyTitle').innerText = '请在左侧录入您的基础财务数据';
-      document.getElementById('strategyDesc').innerHTML = '支持实时录入存款、负债、家庭月收入与月度开销。所有计算均在本地浏览器完成，输入后将自动生成大类资产比例测算结果（仅供参考）。';
-      document.getElementById('dispTotalCash').innerText = '¥0';
+      document.getElementById('strategyTitle').innerText = '请在左侧录入您的家庭资产、负债与收支数据';
+      document.getElementById('strategyDesc').innerHTML = '支持分别录入现金存款、股票基金、债券理财、房产车辆市值及总负债。系统会综合评估“实物沉淀比例”与“现金流健康度”，自动输出金融资产再平衡参考方案。';
+      document.getElementById('assetStructureNote').innerHTML = `<strong>🏠 家庭资产结构透视：</strong>录入资产数据后，此处将自动分析您的“房产/车辆等实物资产”与“可生息金融资产”比例是否失衡。`;
+      document.getElementById('dispTotalFin').innerText = '¥0';
 
       document.getElementById('allocBar').innerHTML = `<div class="alloc-seg" style="width:100%;background:#e5e7eb;"></div>`;
       document.getElementById('allocGrid').innerHTML = `
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#10b981;"></i>高流动性现金管理类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">活期存款 / 货币类现金管理工具</div></div>
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#1a56db;"></i>中长期稳健固收类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">国债 / 政策性金融债 / 稳健债券类资产</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#10b981;"></i>高流动性现金管理类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">活期存款 / 合规货币类现金管理工具</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#1a56db;"></i>中长期稳健固收类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">国债 / 政策性金融债 / 稳健纯债类资产</div></div>
         <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#8b5cf6;"></i>宽基与红利权益类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">高股息红利风格与宽基指数类资产</div></div>
         <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#f59e0b;"></i>贵金属避险配置类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">实物黄金或黄金类避险资产</div></div>
       `;
@@ -609,7 +677,7 @@
       document.getElementById('monthlyFlowAdvice').innerHTML = `<strong>📅 每月新增结余分配参考：</strong>录入收支数据后，此处将展示每月新增结余的蓄水池分配比例参考。`;
       document.getElementById('actionStepsContainer').innerHTML = `
         <div style="padding:18px;text-align:center;color:var(--muted);font-size:13.5px;background:#f9fafb;border-radius:10px;border:1px dashed var(--border);">
-          录入左侧财务参数后，系统将在此处生成针对您家庭资金结构的 <strong>四步配置参考步骤与常见风险提示</strong>。
+          录入左侧完整资产与收支参数后，系统将结合您现有的<strong>存款、债券与股票持仓</strong>，在此生成调仓与配置参考步骤。
         </div>
       `;
 
@@ -619,32 +687,57 @@
       return;
     }
 
-    const cash = Math.max(0, parseFloat(rawCash) || 0);
-    const debt = Math.max(0, parseFloat(rawDebt) || 0);
-    const myInc = Math.max(0, parseFloat(rawMy) || 0);
-    const spInc = Math.max(0, parseFloat(rawSp) || 0);
-    const exInc = Math.max(0, parseFloat(rawEx) || 0);
-    const loan = Math.max(0, parseFloat(rawLoan) || 0);
-    const rent = Math.max(0, parseFloat(rawRent) || 0);
-    const car  = Math.max(0, parseFloat(rawCar)  || 0);
-    const misc = Math.max(0, parseFloat(rawMisc) || 0);
+    // 数值提取
+    const cash   = Math.max(0, parseFloat(raw.cashSavings) || 0);
+    const bond   = Math.max(0, parseFloat(raw.existingBond) || 0);
+    const equity = Math.max(0, parseFloat(raw.existingEquity) || 0);
+    const house  = Math.max(0, parseFloat(raw.houseValue) || 0);
+    const carVal = Math.max(0, parseFloat(raw.carValue) || 0);
+    const debt   = Math.max(0, parseFloat(raw.totalDebt) || 0);
 
-    const totalIncome = myInc + spInc + exInc;
+    const myInc  = Math.max(0, parseFloat(raw.myIncome) || 0);
+    const spInc  = Math.max(0, parseFloat(raw.spouseIncome) || 0);
+    const exInc  = Math.max(0, parseFloat(raw.extraIncome) || 0);
+
+    const loan   = Math.max(0, parseFloat(raw.loanPayment) || 0);
+    const rent   = Math.max(0, parseFloat(raw.rentPayment) || 0);
+    const carExp = Math.max(0, parseFloat(raw.carUtility) || 0);
+    const misc   = Math.max(0, parseFloat(raw.miscExpense) || 0);
+
+    // 资产负债表核心指标
+    const finAssets   = cash + bond + equity;           // 可投资与流动金融资产总额
+    const fixedAssets = house + carVal;                 // 实物固定资产总额
+    const totalAssets = finAssets + fixedAssets;        // 家庭总资产
+    const netWorth    = totalAssets - debt;             // 家庭净资产
+    const debtAssetRatio = totalAssets > 0 ? (debt / totalAssets) * 100 : (debt > 0 ? 100 : 0);
+    const finShare    = totalAssets > 0 ? (finAssets / totalAssets) * 100 : 0;
+    const houseShare  = totalAssets > 0 ? (house / totalAssets) * 100 : 0;
+
+    // 现金流核心指标
+    const totalIncome  = myInc + spInc + exInc;
     const stableIncome = myInc + spInc;
-    const totalExpense = loan + rent + car + misc;
-    const netSavings = totalIncome - totalExpense;
-    const saveRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
+    const totalExpense = loan + rent + carExp + misc;
+    const netSavings   = totalIncome - totalExpense;
+    const saveRate     = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
     const debtToIncome = totalIncome > 0 ? (loan / totalIncome) * 100 : 0;
-    const stableRatio = totalIncome > 0 ? (stableIncome / totalIncome) * 100 : 0;
+    const stableRatio  = totalIncome > 0 ? (stableIncome / totalIncome) * 100 : 0;
     const runwayMonths = totalExpense > 0 ? (cash / totalExpense) : (cash > 0 ? 999 : 0);
+
+    // 更新顶部 6 大 KPI
+    document.getElementById('kpiTotalAsset').innerText = fmt(totalAssets);
+    document.getElementById('kpiAssetSplit').innerText = `金融 ${fmt(finAssets)} | 实物 ${fmt(fixedAssets)}`;
+
+    const nwEl = document.getElementById('kpiNetWorth');
+    nwEl.innerText = fmt(netWorth);
+    nwEl.style.color = netWorth >= 0 ? 'var(--text)' : 'var(--red)';
+    document.getElementById('kpiLeverage').innerText = `资产负债率 ${debtAssetRatio.toFixed(1)}%` + (debtAssetRatio > 50 ? '（杠杆偏高）' : '（安全区间）');
+
+    document.getElementById('kpiFinAsset').innerText = fmt(finAssets);
+    document.getElementById('kpiFinRatio').innerText = totalAssets > 0 ? `占总资产 ${finShare.toFixed(1)}%` : '占总资产 0%';
 
     document.getElementById('kpiIncome').innerText = fmt(totalIncome);
     document.getElementById('kpiStableRatio').innerText = totalIncome > 0
-      ? (`稳定底薪占比 ${stableRatio.toFixed(0)}%` + (stableRatio < 55 ? '（副业依赖较高）' : '（底盘稳固）'))
-      : '尚未填写收入';
-    document.getElementById('kpiExpense').innerText = fmt(totalExpense);
-    document.getElementById('kpiDebtRatio').innerText = totalIncome > 0
-      ? (`偿债收入比 ${debtToIncome.toFixed(1)}%` + (debtToIncome > 40 ? '（偏高警戒）' : '（安全区间）'))
+      ? (`底薪占比 ${stableRatio.toFixed(0)}% | 偿债比 ${debtToIncome.toFixed(1)}%`)
       : '尚未填写收入';
 
     const savEl = document.getElementById('kpiSavings');
@@ -656,16 +749,29 @@
     document.getElementById('kpiRunway').innerText = runwayMonths >= 120 ? '10年以上' : `${runwayMonths.toFixed(1)} 个月`;
     const runTag = document.getElementById('kpiRunwayTag');
     if (runwayMonths < 6) {
-      runTag.innerText = '⚠️ 不足6个月安全垫';
+      runTag.innerText = '⚠️ 现金垫不足6个月';
       runTag.style.color = 'var(--red)';
     } else if (runwayMonths < 12) {
-      runTag.innerText = '基本达标，建议继续加固';
+      runTag.innerText = '基本达标，建议加固';
       runTag.style.color = 'var(--amber)';
     } else {
-      runTag.innerText = '流动性充裕，抗风险极强';
+      runTag.innerText = '现金流动性充裕';
       runTag.style.color = 'var(--green)';
     }
 
+    // 资产结构透视文案
+    const structBox = document.getElementById('assetStructureNote');
+    if (totalAssets === 0) {
+      structBox.innerHTML = `<strong>🏠 家庭资产结构透视：</strong>当前尚未录入存量资产总额，建议重点关注每月现金流结余积累。`;
+    } else if (houseShare >= 75) {
+      structBox.innerHTML = `<strong>🏠 家庭资产结构透视（实物沉淀偏重）：</strong>您的房产市值占家庭总资产高达 <strong>${houseShare.toFixed(1)}%</strong>，而可流动生息的金融资产仅占 <strong>${finShare.toFixed(1)}%</strong>（${fmt(finAssets)}）。属于典型的“不动产占比过高、现金流生息资产偏少”结构，<strong>切忌继续加杠杆购置房产</strong>，未来新增结余应优先向金融资产倾斜。`;
+    } else if (finShare >= 60) {
+      structBox.innerHTML = `<strong>🏠 家庭资产结构透视（高流动性金融主导）：</strong>您的金融资产占总资产 <strong>${finShare.toFixed(1)}%</strong>（${fmt(finAssets)}），房产及车辆等实物资产占 <strong>${(100 - finShare).toFixed(1)}%</strong>。资产变现能力极强，具备通过多元化金融配置获取稳定现金流与长期复利的天然优势。`;
+    } else {
+      structBox.innerHTML = `<strong>🏠 家庭资产结构透视（股债房相对均衡）：</strong>金融资产占 <strong>${finShare.toFixed(1)}%</strong>（${fmt(finAssets)}），实物资产占 <strong>${(100 - finShare).toFixed(1)}%</strong>（${fmt(fixedAssets)}），整体资产结构处于较为健康的过渡区间。`;
+    }
+
+    // 核心决策引擎：综合判定 6 种家庭财务画像
     let profileName = '';
     let profileSummary = '';
     let profileColor = 'var(--primary)';
@@ -676,44 +782,54 @@
     let weights = { cash: 25, bond: 35, equity: 30, gold: 10 };
     let expectedRate = 4.2;
 
-    if (netSavings < 0 || runwayMonths < 4) {
+    if (netSavings < 0 || (runwayMonths < 4 && totalExpense > 0)) {
       profileName = '🚨 流动性吃紧·现金流防线预警型';
-      profileSummary = `当前月度结余为 ${fmt(netSavings)}，存量资金仅够支撑 ${runwayMonths.toFixed(1)} 个月刚性开销，家庭抗风险缓冲垫偏薄，建议优先重建现金防线。`;
+      profileSummary = `当前月度结余为 ${fmt(netSavings)}，现金储备仅够支撑 ${runwayMonths.toFixed(1)} 个月刚性开销，家庭现金流安全垫偏薄，建议优先重建流动性防线。`;
       profileColor = 'var(--red)';
       regime = '测算模型一：流动性优先与现金流防线加固';
       bannerClass = 'danger';
-      title = '体检提示：流动性安全垫偏薄，建议优先保障本金流动性';
-      desc = `您当前的月度净结余为 <strong>${fmt(netSavings)}</strong>，现有存款仅能覆盖 <strong>${runwayMonths.toFixed(1)} 个月</strong> 的家庭刚性支出（通常建议保留 6 个月以上应急金）。在此阶段，家庭财务的核心原则是保持高流动性与本金安全，建议暂缓配置波动较大的权益类资产，将主要资金保留在随取随用的现金管理工具中，并适度梳理非必要弹性开支（如餐饮杂项 ${fmt(misc)}）。`;
+      title = '体检提示：现金安全垫偏薄，建议优先保障本金高流动性';
+      desc = `您当前的月度净结余为 <strong>${fmt(netSavings)}</strong>，现有现金存款（${fmt(cash)}）仅能覆盖 <strong>${runwayMonths.toFixed(1)} 个月</strong> 的家庭刚性支出（通常建议保留 6 个月以上应急金）。${equity > 0 ? `目前您持有 ${fmt(equity)} 权益类资产，若短期现金流持续吃紧，需防范被迫在市场低位被动减仓的风险。` : ''}当前首要原则是保持资金随取随用，暂缓新增高波动资产配置。`;
       weights = { cash: 85, bond: 15, equity: 0, gold: 0 };
       expectedRate = 2.0;
-    } else if (debtToIncome > 40 || (debt > cash * 1.5 && debt > 500000)) {
-      profileName = '⚠️ 高负债承压·债务结构优化型';
-      profileSummary = `每月贷款月供占总收入 ${debtToIncome.toFixed(1)}%（剩余负债 ${fmt(debt)}），偿债压力对现金流占用较高，适合“高防御 + 逐步降杠杆”思路。`;
+    } else if (debtToIncome > 40 || debtAssetRatio > 55) {
+      profileName = '⚠️ 高杠杆承压·债务结构优化型';
+      profileSummary = `月供占收入 ${debtToIncome.toFixed(1)}%（剩余负债 ${fmt(debt)}，资产负债率 ${debtAssetRatio.toFixed(1)}%），债务负担较重，适合“高防御 + 逐步降杠杆”思路。`;
       profileColor = 'var(--amber)';
       regime = '测算模型二：负债压力缓释与防御型配置';
       bannerClass = 'warn';
-      title = '体检提示：偿债占比较高，可评估“留足备用金 + 适度提前还贷”';
-      desc = `您的月供占总收入比例达 <strong>${debtToIncome.toFixed(1)}%</strong>（剩余负债 ${fmt(debt)}）。当贷款利率明显高于稳健理财收益率时，过高的负债会削弱家庭财务韧性。测算建议在预留 8-12 个月家庭应急资金的前提下，评估将部分富余资金用于提前偿还高息贷款，其余资金侧重于高流动性现金管理与中短久期固收类资产。`;
+      title = '体检提示：债务杠杆偏高，建议“留足备用金 + 评估适度提前还贷”';
+      desc = `您的月供占总收入比例达 <strong>${debtToIncome.toFixed(1)}%</strong>，总资产负债率为 <strong>${debtAssetRatio.toFixed(1)}%</strong>（剩余负债 ${fmt(debt)}）。当贷款利率高于稳健理财收益时，高负债会显著削弱家庭抗风险韧性。测算建议在预留 8-12 个月家庭应急资金的前提下，评估将部分低息现金用于提前偿还高息贷款，剩余金融资产侧重于高流动性现金管理与中短久期固收。`;
       weights = risk === 'growth' ? { cash: 40, bond: 40, equity: 15, gold: 5 } : { cash: 45, bond: 45, equity: 5, gold: 5 };
       expectedRate = 3.1;
-    } else if (cash < 300000) {
-      profileName = '🌱 早期财富积累·蓄水池筑基型';
-      profileSummary = `收支健康（储蓄率 ${saveRate.toFixed(1)}%），造血能力良好，但现有存量资金（${fmt(cash)}）体量尚浅，处于靠每月结余稳步积累阶段。`;
+    } else if (houseShare >= 75 && finAssets < totalExpense * 18) {
+      profileName = '🏠 房产沉淀过重·流动性补充型';
+      profileSummary = `房产市值占总资产高达 ${houseShare.toFixed(1)}%，但可流动金融资产仅 ${fmt(finAssets)}，属于“纸面资产丰厚、生息活钱偏少”结构。`;
       profileColor = 'var(--amber)';
-      regime = '测算模型三：安全垫筑基与增量定投积累';
+      regime = '测算模型三：实物资产去集中化与金融活水补充';
+      bannerClass = 'warn';
+      title = '体检提示：不动产占比过高，重点在于“扩充金融生息资产池”';
+      desc = `您的家庭总资产虽达 <strong>${fmt(totalAssets)}</strong>，但其中 <strong>${houseShare.toFixed(1)}%</strong> 沉淀在房产上（车辆等消耗品占 ${(totalAssets > 0 ? carVal/totalAssets*100 : 0).toFixed(1)}%），可灵活调配的金融资产仅 <strong>${fmt(finAssets)}</strong>。在不动产流动性减弱的背景下，建议停止继续向房产追加资金，把每月 ${fmt(netSavings)} 的结余集中注入金融资产池，优先补足现金应急垫与稳健固收底仓。`;
+      weights = risk === 'conservative' ? { cash: 45, bond: 40, equity: 10, gold: 5 } : { cash: 35, bond: 40, equity: 20, gold: 5 };
+      expectedRate = 3.6;
+    } else if (finAssets < 300000) {
+      profileName = '🌱 早期财富积累·金融蓄水池筑基型';
+      profileSummary = `收支健康（储蓄率 ${saveRate.toFixed(1)}%），造血能力良好，但可投资金融资产（${fmt(finAssets)}）体量尚浅，处于靠每月结余稳步积累阶段。`;
+      profileColor = 'var(--amber)';
+      regime = '测算模型四：安全垫筑基与增量定投积累';
       bannerClass = 'warn';
       title = '体检提示：收支造血能力良好，重点在于“先筑底仓、再做增量”';
-      desc = `您的月度储蓄率达 <strong>${saveRate.toFixed(1)}%</strong>（每月结余 ${fmt(netSavings)}），现金流健康，但当前存量资金（${fmt(cash)}）体量有限。在规划上可优先用存量资金筑牢 6-9 个月的应急防守池与稳健固收底仓，再以每月的结余资金作为主力，通过分批定投逐步扩充多元化资产池。`;
+      desc = `您的月度储蓄率达 <strong>${saveRate.toFixed(1)}%</strong>（每月结余 ${fmt(netSavings)}），现金流健康，但当前金融资产（${fmt(finAssets)}）体量有限。在规划上可优先筑牢 6-9 个月的应急防守池与稳健固收底仓，再以每月的结余资金作为主力，通过分批定投逐步扩充多元化资产池。`;
       weights = risk === 'conservative' ? { cash: 55, bond: 35, equity: 5, gold: 5 } : { cash: 45, bond: 30, equity: 20, gold: 5 };
       expectedRate = 3.8;
-    } else if (cash >= 3000000) {
-      profileName = '👑 高净值资产·多资产均衡配置型';
-      profileSummary = `拥有 ${fmt(cash)} 丰厚存量资金及每月 ${fmt(netSavings)} 强劲结余，重点在于分散单一渠道风险并应对无风险利率下行趋势。`;
+    } else if (finAssets >= 3000000) {
+      profileName = '👑 高净值金融资产·多资产均衡配置型';
+      profileSummary = `拥有 ${fmt(finAssets)} 丰厚可投资金融资产（家庭总资产 ${fmt(totalAssets)}），重点在于分散单一渠道风险并应对无风险利率下行趋势。`;
       profileColor = 'var(--purple)';
-      regime = '测算模型四：大额资金分散与跨周期多资产配置';
+      regime = '测算模型五：大额资金分散与跨周期多资产配置';
       bannerClass = 'vip';
-      title = '体检提示：存量资金体量较大，需注重银行分散与多资产均衡';
-      desc = `您拥有 <strong>${fmt(cash)}</strong> 的丰厚存量资金及每月 <strong>${fmt(netSavings)}</strong> 的强劲现金流。在存款利率整体下行的环境下，大额资金长期集中于单一短期定期存款，容易面临再投资收益下滑与单家银行存款保险上限问题。模型建议构建“高流动性现金 + 中长久期固收 + 宽基与高股息权益 + 黄金避险”的多元分散结构。`;
+      title = '体检提示：金融资产体量较大，需注重银行分散与多资产均衡';
+      desc = `您拥有 <strong>${fmt(finAssets)}</strong> 的丰厚金融资产及每月 <strong>${fmt(netSavings)}</strong> 的强劲现金流。在存款利率整体下行的环境下，大额资金长期集中于单一短期定期存款，容易面临再投资收益下滑与单家银行存款保险上限问题。模型建议构建“高流动性现金 + 中长久期固收 + 宽基与高股息权益 + 黄金避险”的多元分散结构。`;
       if (risk === 'conservative') {
         weights = { cash: 20, bond: 55, equity: 15, gold: 10 };
         expectedRate = 3.6;
@@ -726,12 +842,12 @@
       }
     } else {
       profileName = '✅ 高结余·稳健成长型家庭';
-      profileSummary = `月度储蓄率高达 ${saveRate.toFixed(1)}%（月结余 ${fmt(netSavings)}），存量安全垫充足且负债率健康，具备构建“攻守兼备”多资产组合的良好条件。`;
+      profileSummary = `月度储蓄率高达 ${saveRate.toFixed(1)}%（月结余 ${fmt(netSavings)}），金融安全垫充足且负债率健康（${debtAssetRatio.toFixed(1)}%），具备构建“攻守兼备”组合的优良条件。`;
       profileColor = 'var(--green)';
-      regime = '测算模型五：攻守兼备的哑铃型多资产配置';
+      regime = '测算模型六：攻守兼备的哑铃型多资产配置';
       bannerClass = 'good';
       title = '体检提示：现金流与安全垫俱佳，适合由“单一存款”转向“多资产配置”';
-      desc = `您的家庭月度储蓄率高达 <strong>${saveRate.toFixed(1)}%</strong>（每月净结余 ${fmt(netSavings)}），且现有资金 <strong>${fmt(cash)}</strong> 安全垫厚实${debt > 0 ? `（剩余负债 ${fmt(debt)} 占收入比可控）` : ''}。在低利率环境下，仅依赖短期定期存款难以长期跑赢通胀，模型建议采用“固收底仓提供稳定票息 + 权益与避险资产增强长期弹性”的均衡配置思路。`;
+      desc = `您的家庭月度储蓄率高达 <strong>${saveRate.toFixed(1)}%</strong>（每月净结余 ${fmt(netSavings)}），金融资产达 <strong>${fmt(finAssets)}</strong>，资产负债率仅 <strong>${debtAssetRatio.toFixed(1)}%</strong>${debt > 0 ? `（剩余负债 ${fmt(debt)} 压力可控）` : ''}。在低利率环境下，仅依赖短期定期存款难以长期跑赢通胀，模型建议采用“固收底仓提供稳定票息 + 权益与避险资产增强长期弹性”的均衡配置思路。`;
       if (risk === 'conservative') {
         weights = { cash: 30, bond: 50, equity: 12, gold: 8 };
         expectedRate = 3.4;
@@ -759,18 +875,32 @@
     document.getElementById('strategyTag').innerText = regime;
     document.getElementById('strategyTitle').innerText = title;
     document.getElementById('strategyDesc').innerHTML = desc;
-    document.getElementById('dispTotalCash').innerText = fmt(cash);
+    document.getElementById('dispTotalFin').innerText = fmt(finAssets);
 
-    const amtCash   = cash * (weights.cash / 100);
-    const amtBond   = cash * (weights.bond / 100);
-    const amtEquity = cash * (weights.equity / 100);
-    const amtGold   = cash * (weights.gold / 100);
+    // 基于“可投资金融资产总额 (finAssets)”计算目标配置金额，并与用户当前持仓做差额对比
+    const targetCash   = finAssets * (weights.cash / 100);
+    const targetBond   = finAssets * (weights.bond / 100);
+    const targetEquity = finAssets * (weights.equity / 100);
+    const targetGold   = finAssets * (weights.gold / 100);
+
+    const diffCash   = targetCash - cash;
+    const diffBond   = targetBond - bond;
+    const diffEquity = targetEquity - equity;
+    const diffGold   = targetGold; // 用户未单独录黄金时视为从现金/新增调配
+
+    const formatDiff = (diff, curVal) => {
+      if (finAssets === 0) return '当前持仓 ¥0';
+      if (Math.abs(diff) < 1000) return `当前持仓 ${fmt(curVal)}（已基本达标）`;
+      return diff > 0
+        ? `<span style="color:var(--green);">当前 ${fmt(curVal)} → 建议增配 ${fmt(diff)}</span>`
+        : `<span style="color:var(--amber);">当前 ${fmt(curVal)} → 建议调出 ${fmt(Math.abs(diff))}</span>`;
+    };
 
     const segments = [
-      { name: '高流动性现金管理类', pct: weights.cash, amt: amtCash, color: '#10b981', note: '活期存款 / 合规货币类现金管理工具，覆盖家庭日常与应急开支' },
-      { name: '中长期稳健固收类', pct: weights.bond, amt: amtBond, color: '#1a56db', note: '国债 / 政策性金融债 / 中高等级纯债类资产，平滑组合波动' },
-      { name: '宽基与红利权益类', pct: weights.equity, amt: amtEquity, color: '#8b5cf6', note: weights.equity === 0 ? '当前测算模型暂不建议配置高波动权益类资产' : '高股息红利风格与市场宽基指数类资产（建议分批定投，分散风险）' },
-      { name: '贵金属避险配置类', pct: weights.gold, amt: amtGold, color: '#f59e0b', note: weights.gold === 0 ? '当前资金优先保障流动性，暂不配置此类资产' : '实物黄金或场内黄金类避险资产，对冲单一信用货币波动' }
+      { name: '高流动性现金管理类', pct: weights.cash, amt: targetCash, diffHtml: formatDiff(diffCash, cash), color: '#10b981', note: '活期存款 / 合规货币类现金管理工具，覆盖家庭日常与应急开支' },
+      { name: '中长期稳健固收类', pct: weights.bond, amt: targetBond, diffHtml: formatDiff(diffBond, bond), color: '#1a56db', note: '国债 / 政策性金融债 / 中高等级纯债类资产，平滑组合波动' },
+      { name: '宽基与红利权益类', pct: weights.equity, amt: targetEquity, diffHtml: formatDiff(diffEquity, equity), color: '#8b5cf6', note: weights.equity === 0 ? '当前测算模型暂不建议配置高波动权益类资产' : '高股息红利风格与市场宽基指数类资产（建议分批定投，分散风险）' },
+      { name: '贵金属避险配置类', pct: weights.gold, amt: targetGold, diffHtml: finAssets === 0 ? '待测算' : `<span style="color:var(--primary);">目标配置约 ${fmt(targetGold)}（视现有黄金持仓扣减）</span>`, color: '#f59e0b', note: weights.gold === 0 ? '当前资金优先保障流动性，暂不配置此类资产' : '实物黄金或场内黄金类避险资产，对冲单一信用货币波动' }
     ];
 
     document.getElementById('allocBar').innerHTML = segments.map(s =>
@@ -783,7 +913,8 @@
           <span class="alloc-name"><i class="dot" style="background:${s.color};"></i>${s.name}</span>
           <span class="alloc-pct">${s.pct}%</span>
         </div>
-        <div class="alloc-amt">${fmt(s.amt)}</div>
+        <div class="alloc-amt">目标：${fmt(s.amt)}</div>
+        <div class="alloc-diff">${s.diffHtml}</div>
         <div class="alloc-note">${s.note}</div>
       </div>
     `).join('');
@@ -799,45 +930,61 @@
       ① 约 <strong>${fmt(mCash)}/月</strong> 补充进高流动性现金防守池；② 约 <strong>${fmt(mBond)}/月</strong> 归集至稳健固收类底仓；③ 约 <strong>${fmt(mEq)}/月</strong> 用于分批配置权益类及黄金避险类资产（以上比例仅作数学测算参考）。`;
     }
 
-    const bankSplitTip = amtCash > 500000
-      ? `您测算的现金管理类资金为 ${fmt(amtCash)}，已超过《存款保险条例》规定的单家银行 50 万元最高偿付限额，建议分散存放在 2-3 家不同银行以分散机构集中度风险。`
+    // 3. 结合现有持仓差额生成个性化参考步骤与风险提示
+    const bankSplitTip = targetCash > 500000
+      ? `您测算的现金管理类目标资金为 ${fmt(targetCash)}，已超过《存款保险条例》规定的单家银行 50 万元最高偿付限额，建议分散存放在 2-3 家不同银行以分散机构集中度风险。`
       : `即便是低风险的货币类现金管理工具，也建议分散在 2 个不同合规金融机构，避免单一渠道出现临时大额赎回限制。`;
+
+    const bondActionText = bond > 0
+      ? `您当前已持有 <strong>${fmt(bond)}</strong> 债券/固收类资产，对照模型目标 <strong>${fmt(targetBond)}</strong>，${diffBond > 1000 ? `建议分批增配约 <strong>${fmt(diffBond)}</strong>` : (diffBond < -1000 ? `当前固收占比略高，可将超出部分的约 <strong>${fmt(Math.abs(diffBond))}</strong> 逐步向其他缺失类别平衡` : `当前持仓比例已非常理想，继续保持即可`)}。`
+      : `您当前固收类持仓为 ¥0，对应测算目标额度约 <strong>${fmt(targetBond)}</strong>，可关注正规商业银行或证券交易渠道提供的国债、政策性金融债及中高等级纯债类产品，作为家庭资产组合的“压舱石”。`;
 
     const bondPitfall = weights.bond >= 30
       ? `需注意区分“储蓄国债”与“记账式国债”：<strong>记账式国债虽支持交易时段随时卖出，但交易价格随市场利率实时波动，中途提前卖出可能产生本金浮亏</strong>；此外，资管新规已打破刚性兑付，切勿轻信任何宣传“保本高息”的违规非标产品。`
       : `当前模型下固收比例较低，若配置债券类产品，建议优先关注流动性较好、久期较短的品种，避免买入封闭期过长的理财产品导致急用钱时无法变现。`;
 
-    const equityStep = weights.equity === 0
-      ? `<div class="step-action"><strong>参考方向：</strong>根据您当前的负债与应急金覆盖周期测算，<strong>现阶段权益类资产参考比例为 0%</strong>，建议将精力集中在扩充现金安全垫与优化负债结构上。</div>
-         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>在家庭现金流偏紧或负债率较高时，切忌带着“急于回本或赚快钱”的心态加杠杆炒股或追高热点，一旦遭遇市场短期大幅回撤，极易因资金链紧张被迫在低位止损。</div>`
-      : `<div class="step-action"><strong>参考方向：</strong>对应存量资金测算额度约 <strong>${fmt(amtEquity)}</strong>。权益类资产波动较大，在财商规划中通常建议拆分为 12-18 份，通过<strong>长期定期定额（定投）</strong>方式分批参与宽基指数与高股息风格资产，平滑入场成本。</div>
-         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong><strong>切忌一次性满仓（“一把梭”）！</strong>任何权益类资产（包括高股息红利资产）均不承诺本金安全且存在净值回撤风险；请务必用 3 年以上闲钱参与，远离盲目追涨杀跌。</div>`;
+    let equityActionHTML = '';
+    if (weights.equity === 0) {
+      equityActionHTML = `
+        <div class="step-action"><strong>参考方向：</strong>根据您当前的负债与应急金覆盖周期测算，<strong>现阶段权益类资产目标比例为 0%</strong>。${equity > 0 ? `您目前仍持有 <strong>${fmt(equity)}</strong> 股票/偏股基金，建议结合市场走势择机分批降低高波动仓位，优先补充家庭现金安全垫。` : `建议暂不新增股票或偏股基金投资，集中精力稳固现金流。`}</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>在家庭现金流偏紧或负债率较高时，切忌带着“急于回本或赚快钱”的心态加杠杆炒股或追高热点，一旦遭遇市场短期大幅回撤，极易因资金链紧张被迫在低位止损。</div>
+      `;
+    } else {
+      const eqDiffDesc = equity > 0
+        ? `您当前已持有 <strong>${fmt(equity)}</strong> 股票/偏股基金，对照模型目标 <strong>${fmt(targetEquity)}</strong>，${diffEquity > 1000 ? `仍有约 <strong>${fmt(diffEquity)}</strong> 的增配空间，建议拆分为 12-18 份通过长期定投逐步补齐` : (diffEquity < -1000 ? `当前权益仓位已高于模型均衡线约 <strong>${fmt(Math.abs(diffEquity))}</strong>，建议注意止盈平衡，避免单一资产波动过大` : `当前权益持仓比例非常契合您的风险等级`)}。`
+        : `对应存量金融资产测算目标约 <strong>${fmt(targetEquity)}</strong>。权益类资产波动较大，通常建议拆分为 12-18 份，通过<strong>长期定期定额（定投）</strong>方式分批参与宽基指数与高股息风格资产，平滑入场成本。`;
+      equityActionHTML = `
+        <div class="step-action"><strong>参考方向：</strong>${eqDiffDesc}</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong><strong>切忌一次性满仓（“一把梭”）！</strong>任何权益类资产（包括高股息红利资产）均不承诺本金安全且存在净值回撤风险；请务必用 3 年以上闲钱参与，远离盲目追涨杀跌。</div>
+      `;
+    }
 
     document.getElementById('actionStepsContainer').innerHTML = `
       <div class="step-card">
-        <div class="step-header"><span class="step-num">参考步骤 1 · 流动性打底</span><span class="step-title">核定“应急防守资金池”：约 ${fmt(amtCash)}</span></div>
-        <div class="step-action">优先从现有存款中划出约 <strong>${fmt(amtCash)}</strong>（约覆盖 ${totalExpense > 0 ? (amtCash/totalExpense).toFixed(1) : '12'} 个月家庭刚性开销），配置于高流动性、低波动的现金管理类工具中，确保家庭日常运转与突发事件有充足缓冲。</div>
+        <div class="step-header"><span class="step-num">参考步骤 1 · 流动性打底</span><span class="step-title">核定“应急防守资金池”：目标约 ${fmt(targetCash)}</span></div>
+        <div class="step-action">您当前现金与存款为 <strong>${fmt(cash)}</strong>，模型建议保留约 <strong>${fmt(targetCash)}</strong>（约覆盖 ${totalExpense > 0 ? (targetCash/totalExpense).toFixed(1) : '12'} 个月家庭刚性开销）于高流动性现金管理类工具中；${diffCash < -1000 ? `多出的约 <strong>${fmt(Math.abs(diffCash))}</strong> 闲置存款可逐步向下方固收及权益类资产分流，避免长期吃低息。` : `若现金尚有缺口，建议优先用每月结余补足。`}</div>
         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>${bankSplitTip}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">参考步骤 2 · 稳健底仓</span><span class="step-title">构建中长期固收配置底仓：约 ${fmt(amtBond)}</span></div>
-        <div class="step-action">对应测算额度约 <strong>${fmt(amtBond)}</strong>，可关注正规商业银行或证券交易渠道提供的国债、政策性金融债及中高等级纯债类产品，作为家庭资产组合的“压舱石”。</div>
+        <div class="step-header"><span class="step-num">参考步骤 2 · 稳健底仓</span><span class="step-title">构建中长期固收配置底仓：目标约 ${fmt(targetBond)}</span></div>
+        <div class="step-action">${bondActionText}</div>
         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>${bondPitfall}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">参考步骤 3 · 长期弹性</span><span class="step-title">权益类资产分批定投规划：约 ${fmt(amtEquity)}</span></div>
-        ${equityStep}
+        <div class="step-header"><span class="step-num">参考步骤 3 · 长期弹性</span><span class="step-title">权益类资产仓位平衡与定投：目标约 ${fmt(targetEquity)}</span></div>
+        ${equityActionHTML}
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">参考步骤 4 · 避险对冲</span><span class="step-title">贵金属避险仓位参考：约 ${fmt(amtGold)}</span></div>
-        <div class="step-action">${weights.gold > 0 ? `对应测算额度约 <strong>${fmt(amtGold)}</strong>，可了解正规银行积存金、实物投资金条或场内黄金类工具，用于分散单一货币与地缘不确定性风险。` : `当前测算模型下避险仓位参考为 <strong>¥0</strong>，待现金安全垫突破 12 个月开支后再行评估。`}</div>
-        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>黄金价格同样存在双向大幅波动，在家庭配置中通常仅作为辅助分散工具（上限建议控制在 10%-12% 以内），<strong>严禁参与带杠杆的贵金属期货、外盘炒金或非正规交易平台</strong>。</div>
+        <div class="step-header"><span class="step-num">参考步骤 4 · 避险对冲</span><span class="step-title">贵金属避险仓位参考：目标约 ${fmt(targetGold)}</span></div>
+        <div class="step-action">${weights.gold > 0 ? `对应测算目标约 <strong>${fmt(targetGold)}</strong>，可了解正规银行积存金、实物投资金条或场内黄金类工具，用于分散单一货币与地缘不确定性风险。` : `当前测算模型下避险仓位参考为 <strong>¥0</strong>，待现金安全垫突破 12 个月开支后再行评估。`}</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>黄金价格同样存在双向大幅波动，在家庭配置中通常仅作为辅助分散工具（上限建议控制在金融资产的 10%-12% 以内），<strong>严禁参与带杠杆的贵金属期货、外盘炒金或非正规交易平台</strong>。</div>
       </div>
     `;
 
+    // 联动更新底部复利模拟器的起始本金（取可投资金融资产总额 finAssets）
     const simMonthlyInput = document.getElementById('simMonthly');
     const suggestedMonthly = Math.max(0, Math.round(netSavings * 0.75 / 1000) * 1000);
     simMonthlyInput.max = Math.max(100000, suggestedMonthly * 2);
@@ -855,7 +1002,11 @@
   }
 
   function drawChart() {
-    const startCash = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
+    const cash   = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
+    const bond   = Math.max(0, parseFloat(document.getElementById('existingBond').value) || 0);
+    const equity = Math.max(0, parseFloat(document.getElementById('existingEquity').value) || 0);
+    const startFin = cash + bond + equity;
+
     const monthlyAdd = parseFloat(document.getElementById('simMonthly').value) || 0;
     const annualRate = parseFloat(document.getElementById('simRate').value) || 0;
     const years = parseInt(document.getElementById('simYears').value) || 10;
@@ -865,11 +1016,11 @@
     document.getElementById('simYearsLbl').innerText = years + ' 年';
 
     const monthlyRate = (annualRate / 100) / 12;
-    const totals = [startCash];
-    const principals = [startCash];
+    const totals = [startFin];
+    const principals = [startFin];
 
-    let curTotal = startCash;
-    let curPrincipal = startCash;
+    let curTotal = startFin;
+    let curPrincipal = startFin;
 
     for (let y = 1; y <= years; y++) {
       for (let m = 0; m < 12; m++) {
@@ -880,7 +1031,7 @@
       principals.push(curPrincipal);
     }
 
-    document.getElementById('simEndTotal').innerText = `${years}年后模拟测算总值：${fmt(curTotal)}`;
+    document.getElementById('simEndTotal').innerText = `${years}年后金融资产测算总值：${fmt(curTotal)}`;
 
     const canvas = document.getElementById('growthCanvas');
     const ctx = canvas.getContext('2d');
