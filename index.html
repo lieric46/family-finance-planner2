@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家庭财务与化债规划智能诊断系统</title>
+<title>家庭财务体检与资产配置规划器</title>
 <style>
   :root {
     --bg: #f4f6f9;
@@ -40,10 +40,15 @@
     box-shadow: 0 4px 16px rgba(26, 86, 219, 0.15);
   }
   header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-  header p { font-size: 13px; opacity: 0.9; }
+  header p { font-size: 13px; opacity: 0.92; }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
   .privacy-badge {
     display: inline-block;
-    margin-top: 8px;
     background: rgba(255,255,255,0.16);
     padding: 3px 10px;
     border-radius: 99px;
@@ -298,6 +303,19 @@
   }
   @media (max-width: 640px) { .sim-controls { grid-template-columns: 1fr; } }
   canvas { width: 100%; height: 240px; display: block; }
+
+  .disclaimer-footer {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .disclaimer-footer strong { color: #374151; }
+
   .flash { animation: pulseHighlight 0.45s ease; }
   @keyframes pulseHighlight {
     0% { opacity: 0.55; transform: translateY(2px); }
@@ -308,9 +326,12 @@
 <body>
 <div class="container">
   <header>
-    <h1>家庭财务与宏观化债周期智能诊断系统</h1>
-    <p>结合低利率与债务重组周期，自动判定家庭财务画像并动态生成四盘资产配置、立即行动步骤与专属避坑清单</p>
-    <span class="privacy-badge">🔒 纯本地浏览器实时运算，财务数据绝不上传服务器</span>
+    <h1>家庭财务体检与资产配置规划器</h1>
+    <p>根据您的家庭收支、负债与风险承受意愿，提供家庭财务健康度测算、大类资产配置比例参考与常见风险提示</p>
+    <div class="badge-row">
+      <span class="privacy-badge">🔒 纯本地浏览器实时测算，财务数据不上传服务器</span>
+      <span class="privacy-badge">ℹ️ 仅供财商科普与数学模型测算参考，不构成投资建议</span>
+    </div>
   </header>
 
   <div class="grid">
@@ -318,7 +339,7 @@
     <div class="card">
       <div class="card-title">
         <span>1. 家庭财务参数录入</span>
-        <span style="font-size:12px;color:var(--primary);font-weight:600;">录入即实时计算</span>
+        <span style="font-size:12px;color:var(--primary);font-weight:600;">录入即实时测算</span>
       </div>
 
       <div class="section-divider first">存量资产与负债</div>
@@ -367,18 +388,18 @@
         <input type="range" id="rngMisc" min="0" max="20000" step="100" value="0" oninput="syncInput('rngMisc','miscExpense');runEngine()">
       </div>
 
-      <div class="section-divider">个人投资偏好设定</div>
+      <div class="section-divider">个人风险承受偏好</div>
       <div class="form-group">
         <label>风险偏好等级</label>
         <select id="riskProfile" onchange="runEngine()">
-          <option value="conservative">保守型（绝不接受本金明显回撤）</option>
-          <option value="balanced" selected>稳健平衡型（可接受小幅波动换取跑赢通胀）</option>
-          <option value="growth">积极进取型（追求长期资产增值与红利复利）</option>
+          <option value="conservative">保守型（追求本金低波动，不愿承担明显回撤）</option>
+          <option value="balanced" selected>稳健平衡型（可接受适度净值波动以平衡长期购买力）</option>
+          <option value="growth">积极进取型（能承受较大市场波动，关注长期资本积累）</option>
         </select>
       </div>
 
       <div class="btn-row">
-        <button class="btn-analyze" onclick="runEngine(true)">🔄 生成 AI 诊断报告</button>
+        <button class="btn-analyze" onclick="runEngine(true)">🔄 生成家庭财务体检报告</button>
         <button class="btn-reset" onclick="clearAll()">清空重填</button>
       </div>
     </div>
@@ -398,12 +419,12 @@
           <div class="kpi-sub" id="kpiDebtRatio" style="color:var(--muted);">等待录入支出</div>
         </div>
         <div class="kpi-box">
-          <div class="kpi-label">每月净结余 (可投子弹)</div>
+          <div class="kpi-label">每月净结余 (可规划空间)</div>
           <div class="kpi-value" id="kpiSavings">--</div>
           <div class="kpi-sub" id="kpiSaveRate" style="color:var(--muted);">--</div>
         </div>
         <div class="kpi-box">
-          <div class="kpi-label">应急备用金覆盖力</div>
+          <div class="kpi-label">应急备用金覆盖周期</div>
           <div class="kpi-value" id="kpiRunway">--</div>
           <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--muted);">--</div>
         </div>
@@ -412,73 +433,73 @@
       <!-- 系统自动判定当前家庭财务状况画像 -->
       <div class="profile-verdict" id="profileVerdictCard">
         <div class="profile-verdict-left">
-          <div class="profile-verdict-label">📋 系统根据您录入的信息自动判定，您当前的家庭财务状况属于：</div>
+          <div class="profile-verdict-label">📋 根据您录入的财务参数测算，当前家庭财务特征倾向于：</div>
           <div class="profile-verdict-name" id="profileName">
-            <span style="color:var(--muted);">⏳ 待录入家庭收支数据后自动判定</span>
+            <span style="color:var(--muted);">⏳ 待录入家庭收支数据后自动识别</span>
             <span class="profile-pill" id="profileRiskTag">稳健平衡偏好</span>
           </div>
-          <div class="profile-verdict-summary" id="profileSummary">请在左侧输入您的存量资金、月收入与月支出，系统将立即为您识别财务画像并输出定制方案。</div>
+          <div class="profile-verdict-summary" id="profileSummary">请在左侧输入您的存量资金、月收入与月支出，系统将为您测算财务健康度并展示大类资产配置参考模型。</div>
         </div>
       </div>
 
-      <!-- 2. AI 实时深度诊断与动态配置模型 -->
+      <!-- 2. 实时财务体检与动态配置模型 -->
       <div class="card">
         <div class="card-title">
-          <span>2. 实时财务体检与化债周期资产配置模型</span>
+          <span>2. 实时财务体检与大类资产配置参考模型</span>
           <span id="regimeBadge" style="font-size:12px;color:var(--muted);font-weight:700;">等待数据输入</span>
         </div>
 
         <div id="strategyBanner" class="strategy-banner idle">
-          <div class="strategy-tag" id="strategyTag">未启动计算</div>
+          <div class="strategy-tag" id="strategyTag">未启动测算</div>
           <div class="strategy-title" id="strategyTitle">请在左侧录入您的基础财务数据</div>
-          <div class="strategy-desc" id="strategyDesc">支持实时录入存款、负债、家庭月收入与月度开销，所有数字仅保存在您当前设备本地，输入后将自动匹配最贴合实际的化债周期配置方案。</div>
+          <div class="strategy-desc" id="strategyDesc">支持实时录入存款、负债、家庭月收入与月度开销。所有计算均在本地浏览器完成，输入后将自动生成大类资产比例测算结果（仅供参考）。</div>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;">
-          <span>存量资金（<span id="dispTotalCash">¥0</span>）动态四盘分配方案：</span>
-          <span style="color:var(--muted);font-size:12px;">随风险偏好与现金流实时重算</span>
+          <span>存量资金（<span id="dispTotalCash">¥0</span>）大类资产配置比例参考：</span>
+          <span style="color:var(--muted);font-size:12px;">随风险偏好与收支结构动态调整</span>
         </div>
         <div class="alloc-bar" id="allocBar"></div>
         <div class="alloc-grid" id="allocGrid"></div>
 
         <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px;" id="monthlyFlowAdvice">
-          <strong>📅 每月新增结余分配：</strong>录入收支数据后，此处将自动输出每月新增结余的定投分流比例。
+          <strong>📅 每月新增结余分配参考：</strong>录入收支数据后，此处将展示每月新增结余的蓄水池分配比例参考。
         </div>
       </div>
 
-      <!-- 3. 立即行动方案建议与专属避坑指南 -->
+      <!-- 3. 规划落地参考步骤与常见风险提示 -->
       <div class="card">
         <div class="card-title">
-          <span>3. 立即行动方案建议与关键避坑指南</span>
-          <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 含实操防雷提示</span>
+          <span>3. 规划落地参考步骤与常见风险提示</span>
+          <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 市场有风险，决策需谨慎</span>
         </div>
         <div id="actionStepsContainer"></div>
       </div>
 
-      <!-- 4. 长周期复利与资产成长模拟器 -->
+      <!-- 4. 长周期复利数学模型演示 -->
       <div class="card">
         <div class="card-title">
-          <span>4. 资产配置长周期复利模拟曲线</span>
-          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后预计总资产：¥0</span>
+          <span>4. 长周期复利数学模型演示（非实际收益承诺）</span>
+          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后模拟测算总值：¥0</span>
         </div>
         <div class="sim-controls">
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>每月定投追加 (元)</span>
+              <span>每月假设追加本金 (元)</span>
               <span id="simMonthlyLbl" style="color:var(--primary);">¥0</span>
             </label>
             <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="0" oninput="drawChart()">
           </div>
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>组合预期年化收益率</span>
+              <span>假设年化复合回报率</span>
               <span id="simRateLbl" style="color:var(--primary);">4.0%</span>
             </label>
             <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.0" oninput="drawChart()">
           </div>
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>规划持有年限</span>
+              <span>模拟测算年限</span>
               <span id="simYearsLbl" style="color:var(--primary);">10 年</span>
             </label>
             <input type="range" id="simYears" min="3" max="30" step="1" value="10" oninput="drawChart()">
@@ -486,9 +507,17 @@
         </div>
         <canvas id="growthCanvas" width="760" height="240"></canvas>
         <div style="display:flex;justify-content:center;gap:20px;font-size:12px;margin-top:8px;color:var(--muted);">
-          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>组合复利总资产</span>
+          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>模拟测算总值</span>
           <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>累计投入本金</span>
         </div>
+      </div>
+
+      <!-- 底部合规免责声明 -->
+      <div class="disclaimer-footer">
+        <strong>免责与风险提示声明：</strong><br>
+        1. 本工具仅作为家庭收支梳理、财务健康度自我评估及大类资产配置知识普及的辅助计算器，<strong>不构成任何形式的证券、基金、保险、银行理财或贵金属投资建议</strong>，亦不代表任何持牌金融机构的官方意见。<br>
+        2. 页面中展示的配置比例、假设年化回报率及复利曲线均为基于通用财务规划理论的<strong>纯数学模型演示，不构成对未来实际收益的预测或保本保息承诺</strong>。<br>
+        3. 金融市场存在价格波动与本金亏损风险，过往表现不代表未来。您在做出任何实际投资或提前还贷决策前，请结合自身真实风险承受能力，审慎阅读相关金融产品的官方说明书及风险揭示书，并建议咨询具备合法资质的持牌金融机构专业人士。
       </div>
     </div>
   </div>
@@ -537,13 +566,11 @@
     };
     document.getElementById('profileRiskTag').innerText = riskTextMap[risk];
 
-    // 更新滑块右侧标签
     document.getElementById('lblLoan').innerText = rawLoan === '' ? '未填' : fmt(parseFloat(rawLoan) || 0);
     document.getElementById('lblRent').innerText = rawRent === '' ? '未填' : fmt(parseFloat(rawRent) || 0);
     document.getElementById('lblCar').innerText  = rawCar  === '' ? '未填' : fmt(parseFloat(rawCar)  || 0);
     document.getElementById('lblMisc').innerText = rawMisc === '' ? '未填' : fmt(parseFloat(rawMisc) || 0);
 
-    // 若页面完全空白（首次打开），展示友好待录入引导界面
     if (!hasAnyInput) {
       document.getElementById('kpiIncome').innerText = '--';
       document.getElementById('kpiStableRatio').innerText = '等待录入收入';
@@ -559,30 +586,30 @@
       document.getElementById('kpiRunwayTag').style.color = 'var(--muted)';
 
       const pNameEl = document.getElementById('profileName');
-      pNameEl.firstElementChild.innerText = '⏳ 待录入家庭收支数据后自动判定';
+      pNameEl.firstElementChild.innerText = '⏳ 待录入家庭收支数据后自动识别';
       pNameEl.firstElementChild.style.color = 'var(--muted)';
-      document.getElementById('profileSummary').innerText = '请在左侧输入您的存量资金、月收入与月支出，系统将立即为您识别财务画像并输出定制方案。';
+      document.getElementById('profileSummary').innerText = '请在左侧输入您的存量资金、月收入与月支出，系统将为您测算财务健康度并展示大类资产配置参考模型。';
 
       document.getElementById('regimeBadge').innerText = '等待数据输入';
       const banner = document.getElementById('strategyBanner');
       banner.className = 'strategy-banner idle';
-      document.getElementById('strategyTag').innerText = '未启动计算';
+      document.getElementById('strategyTag').innerText = '未启动测算';
       document.getElementById('strategyTitle').innerText = '请在左侧录入您的基础财务数据';
-      document.getElementById('strategyDesc').innerHTML = '支持实时录入存款、负债、家庭月收入与月度开销，所有数字仅保存在您当前设备本地，输入后将自动匹配最贴合实际的化债周期配置方案。';
+      document.getElementById('strategyDesc').innerHTML = '支持实时录入存款、负债、家庭月收入与月度开销。所有计算均在本地浏览器完成，输入后将自动生成大类资产比例测算结果（仅供参考）。';
       document.getElementById('dispTotalCash').innerText = '¥0';
 
       document.getElementById('allocBar').innerHTML = `<div class="alloc-seg" style="width:100%;background:#e5e7eb;"></div>`;
       document.getElementById('allocGrid').innerHTML = `
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#10b981;"></i>防守与应急现金盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">货币基金 / T+0现金理财 / 短债基金</div></div>
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#1a56db;"></i>中长端固收锁息盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">记账式国债 / 储蓄国债 / 政金债基</div></div>
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#8b5cf6;"></i>权益红利与成长盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">红利低波ETF + 宽基指数分批定投</div></div>
-        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#f59e0b;"></i>另类避险压舱石</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">实物投资金条或场内黄金ETF</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#10b981;"></i>高流动性现金管理类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">活期存款 / 货币类现金管理工具</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#1a56db;"></i>中长期稳健固收类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">国债 / 政策性金融债 / 稳健债券类资产</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#8b5cf6;"></i>宽基与红利权益类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">高股息红利风格与宽基指数类资产</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#f59e0b;"></i>贵金属避险配置类</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">实物黄金或黄金类避险资产</div></div>
       `;
 
-      document.getElementById('monthlyFlowAdvice').innerHTML = `<strong>📅 每月新增结余分配：</strong>录入收支数据后，此处将自动输出每月新增结余的定投分流比例。`;
+      document.getElementById('monthlyFlowAdvice').innerHTML = `<strong>📅 每月新增结余分配参考：</strong>录入收支数据后，此处将展示每月新增结余的蓄水池分配比例参考。`;
       document.getElementById('actionStepsContainer').innerHTML = `
         <div style="padding:18px;text-align:center;color:var(--muted);font-size:13.5px;background:#f9fafb;border-radius:10px;border:1px dashed var(--border);">
-          录入左侧财务参数后，系统将在此处生成针对您个人资金体量的 <strong>四步立即行动清单与专属避坑提示</strong>。
+          录入左侧财务参数后，系统将在此处生成针对您家庭资金结构的 <strong>四步配置参考步骤与常见风险提示</strong>。
         </div>
       `;
 
@@ -611,7 +638,6 @@
     const stableRatio = totalIncome > 0 ? (stableIncome / totalIncome) * 100 : 0;
     const runwayMonths = totalExpense > 0 ? (cash / totalExpense) : (cash > 0 ? 999 : 0);
 
-    // 刷新顶部 KPI
     document.getElementById('kpiIncome').innerText = fmt(totalIncome);
     document.getElementById('kpiStableRatio').innerText = totalIncome > 0
       ? (`稳定底薪占比 ${stableRatio.toFixed(0)}%` + (stableRatio < 55 ? '（副业依赖较高）' : '（底盘稳固）'))
@@ -640,7 +666,6 @@
       runTag.style.color = 'var(--green)';
     }
 
-    // 核心决策引擎：判定家庭财务状况画像 + 切换 5 种策略模式与资产比例
     let profileName = '';
     let profileSummary = '';
     let profileColor = 'var(--primary)';
@@ -653,77 +678,76 @@
 
     if (netSavings < 0 || runwayMonths < 4) {
       profileName = '🚨 流动性吃紧·现金流防线预警型';
-      profileSummary = `当前月度结余为 ${fmt(netSavings)}，存量资金仅够支撑 ${runwayMonths.toFixed(1)} 个月刚性开销，家庭抗风险缓冲垫偏薄，需优先重建现金防线。`;
+      profileSummary = `当前月度结余为 ${fmt(netSavings)}，存量资金仅够支撑 ${runwayMonths.toFixed(1)} 个月刚性开销，家庭抗风险缓冲垫偏薄，建议优先重建现金防线。`;
       profileColor = 'var(--red)';
-      regime = '模式一：现金流防线危机与流动性急救模式';
+      regime = '测算模型一：流动性优先与现金流防线加固';
       bannerClass = 'danger';
-      title = '核心诊断：流动性安全垫不足，严禁任何高风险投资！';
-      desc = `您当前的月度净结余为 <strong>${fmt(netSavings)}</strong>，现有存款仅能覆盖 <strong>${runwayMonths.toFixed(1)} 个月</strong> 的家庭刚性支出（低于6个月警戒线）。在宏观经济转型期，现金流安全高于一切。当前首要任务是暂停权益类与长锁定期投资，将全部存款保留在随取随用的货币基金或活期理财中，同时压缩非必要弹性开支（如餐饮杂项 ${fmt(misc)}）。`;
+      title = '体检提示：流动性安全垫偏薄，建议优先保障本金流动性';
+      desc = `您当前的月度净结余为 <strong>${fmt(netSavings)}</strong>，现有存款仅能覆盖 <strong>${runwayMonths.toFixed(1)} 个月</strong> 的家庭刚性支出（通常建议保留 6 个月以上应急金）。在此阶段，家庭财务的核心原则是保持高流动性与本金安全，建议暂缓配置波动较大的权益类资产，将主要资金保留在随取随用的现金管理工具中，并适度梳理非必要弹性开支（如餐饮杂项 ${fmt(misc)}）。`;
       weights = { cash: 85, bond: 15, equity: 0, gold: 0 };
       expectedRate = 2.0;
     } else if (debtToIncome > 40 || (debt > cash * 1.5 && debt > 500000)) {
-      profileName = '⚠️ 高负债承压·债务优化优先型';
-      profileSummary = `每月贷款月供占总收入 ${debtToIncome.toFixed(1)}%（剩余负债 ${fmt(debt)}），偿债压力对现金流占用较高，适合“高防御 + 逐步降杠杆”策略。`;
+      profileName = '⚠️ 高负债承压·债务结构优化型';
+      profileSummary = `每月贷款月供占总收入 ${debtToIncome.toFixed(1)}%（剩余负债 ${fmt(debt)}），偿债压力对现金流占用较高，适合“高防御 + 逐步降杠杆”思路。`;
       profileColor = 'var(--amber)';
-      regime = '模式二：高负债压降与防御型资产配置模式';
+      regime = '测算模型二：负债压力缓释与防御型配置';
       bannerClass = 'warn';
-      title = '核心诊断：偿债负担较重，建议“防守优先 + 适度提前还贷”';
-      desc = `您的月供占总收入比例达 <strong>${debtToIncome.toFixed(1)}%</strong>（剩余负债 ${fmt(debt)}），在当前降息周期与收入波动预期下，高负债会显著削弱家庭抗风险能力。建议预留充足的 8-12 个月应急资金后，优先将部分低息存款用于提前偿还高利率贷款，剩余资金以中短债及国债锁定稳健收益，严格控制权益仓位。`;
+      title = '体检提示：偿债占比较高，可评估“留足备用金 + 适度提前还贷”';
+      desc = `您的月供占总收入比例达 <strong>${debtToIncome.toFixed(1)}%</strong>（剩余负债 ${fmt(debt)}）。当贷款利率明显高于稳健理财收益率时，过高的负债会削弱家庭财务韧性。测算建议在预留 8-12 个月家庭应急资金的前提下，评估将部分富余资金用于提前偿还高息贷款，其余资金侧重于高流动性现金管理与中短久期固收类资产。`;
       weights = risk === 'growth' ? { cash: 40, bond: 40, equity: 15, gold: 5 } : { cash: 45, bond: 45, equity: 5, gold: 5 };
       expectedRate = 3.1;
     } else if (cash < 300000) {
       profileName = '🌱 早期财富积累·蓄水池筑基型';
-      profileSummary = `收支健康（储蓄率 ${saveRate.toFixed(1)}%），造血能力良好，但现有存量资金（${fmt(cash)}）体量尚浅，处于靠每月结余稳步滚雪球阶段。`;
+      profileSummary = `收支健康（储蓄率 ${saveRate.toFixed(1)}%），造血能力良好，但现有存量资金（${fmt(cash)}）体量尚浅，处于靠每月结余稳步积累阶段。`;
       profileColor = 'var(--amber)';
-      regime = '模式三：早期财富积累与安全垫筑基模式';
+      regime = '测算模型三：安全垫筑基与增量定投积累';
       bannerClass = 'warn';
-      title = '核心诊断：收支健康但存量蓄水池尚浅，重点在“增量定投”';
-      desc = `您的月度储蓄率达 <strong>${saveRate.toFixed(1)}%</strong>（每月结余 ${fmt(netSavings)}），造血能力良好，但当前存量资金（${fmt(cash)}）体量有限。建议先用存量资金筑牢 6-9 个月的应急防守盘与短债底仓，把每月的结余资金作为主力，通过宽基指数定投慢慢滚大雪球。`;
+      title = '体检提示：收支造血能力良好，重点在于“先筑底仓、再做增量”';
+      desc = `您的月度储蓄率达 <strong>${saveRate.toFixed(1)}%</strong>（每月结余 ${fmt(netSavings)}），现金流健康，但当前存量资金（${fmt(cash)}）体量有限。在规划上可优先用存量资金筑牢 6-9 个月的应急防守池与稳健固收底仓，再以每月的结余资金作为主力，通过分批定投逐步扩充多元化资产池。`;
       weights = risk === 'conservative' ? { cash: 55, bond: 35, equity: 5, gold: 5 } : { cash: 45, bond: 30, equity: 20, gold: 5 };
       expectedRate = 3.8;
     } else if (cash >= 3000000) {
-      profileName = '👑 高净值资产·跨周期阶梯配置型';
-      profileSummary = `拥有 ${fmt(cash)} 丰厚存量资金及每月 ${fmt(netSavings)} 强劲结余，核心任务是摆脱普通存款利率下行陷阱，构建机构级跨周期组合。`;
+      profileName = '👑 高净值资产·多资产均衡配置型';
+      profileSummary = `拥有 ${fmt(cash)} 丰厚存量资金及每月 ${fmt(netSavings)} 强劲结余，重点在于分散单一渠道风险并应对无风险利率下行趋势。`;
       profileColor = 'var(--purple)';
-      regime = '模式四：高净值跨周期阶梯化债配置模式';
+      regime = '测算模型四：大额资金分散与跨周期多资产配置';
       bannerClass = 'vip';
-      title = '核心诊断：高净值资产体量，核心矛盾是“对抗利率下行与资产荒”';
-      desc = `您拥有 <strong>${fmt(cash)}</strong> 的丰厚存量资金及每月 <strong>${fmt(netSavings)}</strong> 的强劲现金流。在国家化债与无风险利率长期下行的背景下，把大额资金放在普通银行定期会面临严重的再投资利率下滑与存款保险上限问题。建议构建“国债阶梯久期 + 高股息红利收租 + 宽基成长 + 黄金避险”的机构级资产组合。`;
+      title = '体检提示：存量资金体量较大，需注重银行分散与多资产均衡';
+      desc = `您拥有 <strong>${fmt(cash)}</strong> 的丰厚存量资金及每月 <strong>${fmt(netSavings)}</strong> 的强劲现金流。在存款利率整体下行的环境下，大额资金长期集中于单一短期定期存款，容易面临再投资收益下滑与单家银行存款保险上限问题。模型建议构建“高流动性现金 + 中长久期固收 + 宽基与高股息权益 + 黄金避险”的多元分散结构。`;
       if (risk === 'conservative') {
         weights = { cash: 20, bond: 55, equity: 15, gold: 10 };
         expectedRate = 3.6;
       } else if (risk === 'balanced') {
         weights = { cash: 15, bond: 40, equity: 35, gold: 10 };
-        expectedRate = 4.8;
+        expectedRate = 4.6;
       } else {
         weights = { cash: 10, bond: 30, equity: 48, gold: 12 };
-        expectedRate = 5.8;
+        expectedRate = 5.5;
       }
     } else {
       profileName = '✅ 高结余·稳健成长型家庭';
-      profileSummary = `月度储蓄率高达 ${saveRate.toFixed(1)}%（月结余 ${fmt(netSavings)}），存量安全垫充足且负债率健康，正处于由“单一存款”向“攻守兼备资产配置”升级的最佳窗口。`;
+      profileSummary = `月度储蓄率高达 ${saveRate.toFixed(1)}%（月结余 ${fmt(netSavings)}），存量安全垫充足且负债率健康，具备构建“攻守兼备”多资产组合的良好条件。`;
       profileColor = 'var(--green)';
-      regime = '模式五：标准哑铃型化债周期均衡配置模式';
+      regime = '测算模型五：攻守兼备的哑铃型多资产配置';
       bannerClass = 'good';
-      title = '核心诊断：现金流极其充沛，适合从“单一存款”向“攻守哑铃”转型';
-      desc = `您的家庭月度储蓄率高达 <strong>${saveRate.toFixed(1)}%</strong>（每月净结余 ${fmt(netSavings)}），且现有资金 <strong>${fmt(cash)}</strong> 安全垫极厚${debt > 0 ? `（剩余负债 ${fmt(debt)} 属于可控良性负债，无需急于提前还清）` : ''}。在利率中枢持续下移的化债周期里，建议告别单一短期定期，通过“长久期国债锁息 + 红利低波与宽基定投”分享国家产业升级与资产重组红利。`;
+      title = '体检提示：现金流与安全垫俱佳，适合由“单一存款”转向“多资产配置”';
+      desc = `您的家庭月度储蓄率高达 <strong>${saveRate.toFixed(1)}%</strong>（每月净结余 ${fmt(netSavings)}），且现有资金 <strong>${fmt(cash)}</strong> 安全垫厚实${debt > 0 ? `（剩余负债 ${fmt(debt)} 占收入比可控）` : ''}。在低利率环境下，仅依赖短期定期存款难以长期跑赢通胀，模型建议采用“固收底仓提供稳定票息 + 权益与避险资产增强长期弹性”的均衡配置思路。`;
       if (risk === 'conservative') {
         weights = { cash: 30, bond: 50, equity: 12, gold: 8 };
         expectedRate = 3.4;
       } else if (risk === 'balanced') {
         weights = { cash: 25, bond: 35, equity: 30, gold: 10 };
-        expectedRate = 4.4;
+        expectedRate = 4.2;
       } else {
         weights = { cash: 15, bond: 30, equity: 45, gold: 10 };
-        expectedRate = 5.4;
+        expectedRate = 5.2;
       }
     }
 
     if (stableRatio < 55 && exInc > 0) {
-      desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性高于固定工资，因此防守现金垫已为您自动保留充足冗余保护。`;
+      desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性通常高于固定薪资，建议在实际执行时保留更充裕的现金缓冲。`;
     }
 
-    // 更新财务状况画像判定卡
     const pNameEl = document.getElementById('profileName');
     pNameEl.firstElementChild.innerText = profileName;
     pNameEl.firstElementChild.style.color = profileColor;
@@ -743,10 +767,10 @@
     const amtGold   = cash * (weights.gold / 100);
 
     const segments = [
-      { name: '防守与应急现金盘', pct: weights.cash, amt: amtCash, color: '#10b981', note: '货币基金 / T+0现金理财 / 短债基金，覆盖突发支出' },
-      { name: '中长端固收锁息盘', pct: weights.bond, amt: amtBond, color: '#1a56db', note: '记账式国债 / 储蓄国债 / 政金债基，锁定降息周期收益' },
-      { name: '权益红利与成长盘', pct: weights.equity, amt: amtEquity, color: '#8b5cf6', note: weights.equity === 0 ? '当前模式建议暂缓配置，优先稳固现金流' : '红利低波ETF（收息）+ 沪深300/科技制造宽基（分批定投）' },
-      { name: '另类避险压舱石', pct: weights.gold, amt: amtGold, color: '#f59e0b', note: weights.gold === 0 ? '当前资金优先保障流动性，暂不配置' : '实物金条或场内黄金ETF，对冲地缘与宏观不确定性' }
+      { name: '高流动性现金管理类', pct: weights.cash, amt: amtCash, color: '#10b981', note: '活期存款 / 合规货币类现金管理工具，覆盖家庭日常与应急开支' },
+      { name: '中长期稳健固收类', pct: weights.bond, amt: amtBond, color: '#1a56db', note: '国债 / 政策性金融债 / 中高等级纯债类资产，平滑组合波动' },
+      { name: '宽基与红利权益类', pct: weights.equity, amt: amtEquity, color: '#8b5cf6', note: weights.equity === 0 ? '当前测算模型暂不建议配置高波动权益类资产' : '高股息红利风格与市场宽基指数类资产（建议分批定投，分散风险）' },
+      { name: '贵金属避险配置类', pct: weights.gold, amt: amtGold, color: '#f59e0b', note: weights.gold === 0 ? '当前资金优先保障流动性，暂不配置此类资产' : '实物黄金或场内黄金类避险资产，对冲单一信用货币波动' }
     ];
 
     document.getElementById('allocBar').innerHTML = segments.map(s =>
@@ -766,51 +790,51 @@
 
     const flowEl = document.getElementById('monthlyFlowAdvice');
     if (netSavings <= 0) {
-      flowEl.innerHTML = `<strong>📅 每月新增结余分配：</strong>当前月度结余为 <strong>${fmt(netSavings)}</strong>，请立即梳理账单，削减弹性支出，确保每月至少留出 20% 以上的正现金流。`;
+      flowEl.innerHTML = `<strong>📅 每月新增结余分配参考：</strong>当前测算月度结余为 <strong>${fmt(netSavings)}</strong>，建议优先梳理月度账单、优化非刚性支出，恢复正现金流后再启动中长期投资规划。`;
     } else {
       const mCash = netSavings * (weights.cash / 100);
       const mBond = netSavings * (weights.bond / 100);
       const mEq   = netSavings * ((weights.equity + weights.gold) / 100);
-      flowEl.innerHTML = `<strong>📅 每月新增结余（${fmt(netSavings)}/月）自动分流指令：</strong><br>
-      ① <strong>${fmt(mCash)}/月</strong> 补充进活期/短债防守池；② <strong>${fmt(mBond)}/月</strong> 定投中长期利率债/固收底仓；③ <strong>${fmt(mEq)}/月</strong> 用于定投红利低波ETF、宽基指数及黄金ETF。`;
+      flowEl.innerHTML = `<strong>📅 每月新增结余（${fmt(netSavings)}/月）蓄水池分配参考：</strong><br>
+      ① 约 <strong>${fmt(mCash)}/月</strong> 补充进高流动性现金防守池；② 约 <strong>${fmt(mBond)}/月</strong> 归集至稳健固收类底仓；③ 约 <strong>${fmt(mEq)}/月</strong> 用于分批配置权益类及黄金避险类资产（以上比例仅作数学测算参考）。`;
     }
 
     const bankSplitTip = amtCash > 500000
-      ? `您防守盘金额高达 ${fmt(amtCash)}，已超过单家银行 50 万元存款保险赔付上限！务必拆分为 2-3 家国有大行或头部股份制银行存放。`
-      : `即便都是货币基金或现金理财，也建议分散在 2 个不同合规银行或平台，避免单一渠道出现临时限额赎回。`;
+      ? `您测算的现金管理类资金为 ${fmt(amtCash)}，已超过《存款保险条例》规定的单家银行 50 万元最高偿付限额，建议分散存放在 2-3 家不同银行以分散机构集中度风险。`
+      : `即便是低风险的货币类现金管理工具，也建议分散在 2 个不同合规金融机构，避免单一渠道出现临时大额赎回限制。`;
 
     const bondPitfall = weights.bond >= 30
-      ? `银行APP里开放随时买卖的是<strong>“记账式国债”</strong>，持有到期保本保息，但<strong>中途提前卖出可能因市场利率波动产生微小市价差价盈亏</strong>；且切勿轻信任何宣传“保本高息（年化超4%）”的非国债理财。`
-      : `当前您的固收比例较低，重点选择流动性好的短债基金或3年期储蓄国债，避免买入封闭期过长的银行理财导致急用钱时无法变现。`;
+      ? `需注意区分“储蓄国债”与“记账式国债”：<strong>记账式国债虽支持交易时段随时卖出，但交易价格随市场利率实时波动，中途提前卖出可能产生本金浮亏</strong>；此外，资管新规已打破刚性兑付，切勿轻信任何宣传“保本高息”的违规非标产品。`
+      : `当前模型下固收比例较低，若配置债券类产品，建议优先关注流动性较好、久期较短的品种，避免买入封闭期过长的理财产品导致急用钱时无法变现。`;
 
     const equityStep = weights.equity === 0
-      ? `<div class="step-action"><strong>具体行动：</strong>根据您当前的负债与现金流安全垫测算，<strong>本月及本季度暂不建议投入任何股票或偏股型基金（配置比例 0%）</strong>，将全部精力放在扩充现金安全垫与压降负债上。</div>
-         <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>切忌在家庭现金流吃紧或高负债期试图通过“炒股、买热门基金”来快速翻本，一旦遭遇市场短期回调，极易被迫在底部割肉来还房租或月供。</div>`
-      : `<div class="step-action"><strong>具体行动：</strong>拿出存量资金中的 <strong>${fmt(amtEquity)}</strong>（切勿一次性买入！），拆分为 12-18 份，每月定期定额买入<strong>红利低波ETF</strong>与<strong>沪深300/中证500宽基指数</strong>。</div>
-         <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong><strong>绝对禁止“一把梭”满仓！</strong>哪怕是高股息红利资产也会有阶段性回撤；同时远离短期暴涨的题材概念股，只做指数化定投才能稳稳吃到资产重估红利。</div>`;
+      ? `<div class="step-action"><strong>参考方向：</strong>根据您当前的负债与应急金覆盖周期测算，<strong>现阶段权益类资产参考比例为 0%</strong>，建议将精力集中在扩充现金安全垫与优化负债结构上。</div>
+         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>在家庭现金流偏紧或负债率较高时，切忌带着“急于回本或赚快钱”的心态加杠杆炒股或追高热点，一旦遭遇市场短期大幅回撤，极易因资金链紧张被迫在低位止损。</div>`
+      : `<div class="step-action"><strong>参考方向：</strong>对应存量资金测算额度约 <strong>${fmt(amtEquity)}</strong>。权益类资产波动较大，在财商规划中通常建议拆分为 12-18 份，通过<strong>长期定期定额（定投）</strong>方式分批参与宽基指数与高股息风格资产，平滑入场成本。</div>
+         <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong><strong>切忌一次性满仓（“一把梭”）！</strong>任何权益类资产（包括高股息红利资产）均不承诺本金安全且存在净值回撤风险；请务必用 3 年以上闲钱参与，远离盲目追涨杀跌。</div>`;
 
     document.getElementById('actionStepsContainer').innerHTML = `
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第 1 步 · 1天内执行</span><span class="step-title">划转并锁定“防守现金垫”：${fmt(amtCash)}</span></div>
-        <div class="step-action">从现有存款中划出 <strong>${fmt(amtCash)}</strong>（约覆盖 ${totalExpense > 0 ? (amtCash/totalExpense).toFixed(1) : '12'} 个月家庭刚性开销），存入 T+0 货币基金或银行现金管理类产品中。</div>
-        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>${bankSplitTip}</div>
+        <div class="step-header"><span class="step-num">参考步骤 1 · 流动性打底</span><span class="step-title">核定“应急防守资金池”：约 ${fmt(amtCash)}</span></div>
+        <div class="step-action">优先从现有存款中划出约 <strong>${fmt(amtCash)}</strong>（约覆盖 ${totalExpense > 0 ? (amtCash/totalExpense).toFixed(1) : '12'} 个月家庭刚性开销），配置于高流动性、低波动的现金管理类工具中，确保家庭日常运转与突发事件有充足缓冲。</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>${bankSplitTip}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第 2 步 · 1周内完成</span><span class="step-title">建立中长端固收锁息底仓：${fmt(amtBond)}</span></div>
-        <div class="step-action">利用 <strong>${fmt(amtBond)}</strong>，通过常用商业银行APP国债专区购买 3-5 年期国债，或在券商/同花顺账户分批配置场内国债ETF与政金债指数基金。</div>
-        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>${bondPitfall}</div>
+        <div class="step-header"><span class="step-num">参考步骤 2 · 稳健底仓</span><span class="step-title">构建中长期固收配置底仓：约 ${fmt(amtBond)}</span></div>
+        <div class="step-action">对应测算额度约 <strong>${fmt(amtBond)}</strong>，可关注正规商业银行或证券交易渠道提供的国债、政策性金融债及中高等级纯债类产品，作为家庭资产组合的“压舱石”。</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>${bondPitfall}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第 3 步 · 1个月内起步</span><span class="step-title">权益与红利资产分批建仓：${fmt(amtEquity)}</span></div>
+        <div class="step-header"><span class="step-num">参考步骤 3 · 长期弹性</span><span class="step-title">权益类资产分批定投规划：约 ${fmt(amtEquity)}</span></div>
         ${equityStep}
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第 4 步 · 本季度内完善</span><span class="step-title">配置黄金避险压舱石：${fmt(amtGold)}</span></div>
-        <div class="step-action">${weights.gold > 0 ? `动用 <strong>${fmt(amtGold)}</strong> 购入银行积存金、实物投资金条或场内黄金ETF，作为对抗宏观不确定性的终极价值锚。` : `当前策略模式下黄金配置为 <strong>¥0</strong>，待现金安全垫突破 12 个月开支后再行启动。`}</div>
-        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>黄金在组合中仅承担“保险丝”角色（上限控制在 10%-12%），<strong>严禁碰带杠杆的纸黄金、贵金属期货或非正规炒金平台</strong>。</div>
+        <div class="step-header"><span class="step-num">参考步骤 4 · 避险对冲</span><span class="step-title">贵金属避险仓位参考：约 ${fmt(amtGold)}</span></div>
+        <div class="step-action">${weights.gold > 0 ? `对应测算额度约 <strong>${fmt(amtGold)}</strong>，可了解正规银行积存金、实物投资金条或场内黄金类工具，用于分散单一货币与地缘不确定性风险。` : `当前测算模型下避险仓位参考为 <strong>¥0</strong>，待现金安全垫突破 12 个月开支后再行评估。`}</div>
+        <div class="pitfall-box"><strong>⚠️ 常见风险提示：</strong>黄金价格同样存在双向大幅波动，在家庭配置中通常仅作为辅助分散工具（上限建议控制在 10%-12% 以内），<strong>严禁参与带杠杆的贵金属期货、外盘炒金或非正规交易平台</strong>。</div>
       </div>
     `;
 
@@ -856,7 +880,7 @@
       principals.push(curPrincipal);
     }
 
-    document.getElementById('simEndTotal').innerText = `${years}年后预计总资产：${fmt(curTotal)}`;
+    document.getElementById('simEndTotal').innerText = `${years}年后模拟测算总值：${fmt(curTotal)}`;
 
     const canvas = document.getElementById('growthCanvas');
     const ctx = canvas.getContext('2d');
