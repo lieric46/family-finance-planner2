@@ -96,6 +96,11 @@
     color: var(--text);
     background: #fff;
   }
+  input[type="number"]::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+    font-size: 13px;
+  }
   input[type="number"]:focus, select:focus {
     outline: none;
     border-color: var(--primary);
@@ -116,20 +121,36 @@
     padding-top: 0;
     border-top: none;
   }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
   .btn-analyze {
-    width: 100%;
+    flex: 1;
     padding: 12px;
     background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 8px;
     transition: background 0.2s;
   }
   .btn-analyze:hover { background: #1e40af; }
+  .btn-reset {
+    padding: 12px 14px;
+    background: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-reset:hover { background: #e5e7eb; }
 
   /* 右侧看板 */
   .kpi-row {
@@ -183,6 +204,7 @@
     border-left: 5px solid var(--primary);
     background: var(--primary-light);
   }
+  .strategy-banner.idle { background: #f8fafc; border-left-color: #9ca3af; }
   .strategy-banner.danger { background: var(--red-bg); border-left-color: var(--red); }
   .strategy-banner.warn { background: var(--amber-bg); border-left-color: var(--amber); }
   .strategy-banner.good { background: var(--green-bg); border-left-color: var(--green); }
@@ -292,57 +314,57 @@
   </header>
 
   <div class="grid">
-    <!-- 左侧录入区 -->
+    <!-- 左侧录入区（默认全部空白） -->
     <div class="card">
       <div class="card-title">
         <span>1. 家庭财务参数录入</span>
-        <span style="font-size:12px;color:var(--primary);font-weight:600;">实时动态联动</span>
+        <span style="font-size:12px;color:var(--primary);font-weight:600;">录入即实时计算</span>
       </div>
 
       <div class="section-divider first">存量资产与负债</div>
       <div class="form-group">
         <label>现有可用现金/定期存款 (元)</label>
-        <input type="number" id="cashSavings" value="1000000" step="10000" oninput="runEngine()">
+        <input type="number" id="cashSavings" value="" placeholder="请输入现有存款总额，无则填 0" step="10000" oninput="runEngine()">
       </div>
       <div class="form-group">
         <label>剩余总负债/贷款余额 (元)</label>
-        <input type="number" id="totalDebt" value="320000" step="10000" oninput="runEngine()">
+        <input type="number" id="totalDebt" value="" placeholder="请输入剩余贷款总额，无则填 0" step="10000" oninput="runEngine()">
       </div>
 
       <div class="section-divider">每月家庭收入明细</div>
       <div class="form-group">
         <label>本人税后月薪 (元)</label>
-        <input type="number" id="myIncome" value="25000" step="500" oninput="runEngine()">
+        <input type="number" id="myIncome" value="" placeholder="请输入本人税后月收入" step="500" oninput="runEngine()">
       </div>
       <div class="form-group">
         <label>配偶税后月薪 (元)</label>
-        <input type="number" id="spouseIncome" value="8000" step="500" oninput="runEngine()">
+        <input type="number" id="spouseIncome" value="" placeholder="请输入配偶税后月收入，无则留空" step="500" oninput="runEngine()">
       </div>
       <div class="form-group">
         <label>每月额外/副业/奖金收入 (元)</label>
-        <input type="number" id="extraIncome" value="30500" step="1000" oninput="runEngine()">
+        <input type="number" id="extraIncome" value="" placeholder="请输入月均额外收入，无则留空" step="1000" oninput="runEngine()">
       </div>
 
       <div class="section-divider">每月刚性支出与还贷</div>
       <div class="form-group">
-        <label>每月贷款月供（房贷/车贷/消费贷等） <span class="val-tag" id="lblLoan">¥9,200</span></label>
-        <input type="number" id="loanPayment" value="9200" step="200" oninput="syncSlider('loanPayment','rngLoan');runEngine()">
-        <input type="range" id="rngLoan" min="0" max="40000" step="200" value="9200" oninput="syncInput('rngLoan','loanPayment');runEngine()">
+        <label>每月贷款月供（房贷/车贷/消费贷等） <span class="val-tag" id="lblLoan">未填</span></label>
+        <input type="number" id="loanPayment" value="" placeholder="请输入每月还贷总额，无则填 0" step="200" oninput="syncSlider('loanPayment','rngLoan');runEngine()">
+        <input type="range" id="rngLoan" min="0" max="40000" step="200" value="0" oninput="syncInput('rngLoan','loanPayment');runEngine()">
       </div>
       <div class="form-group">
-        <label>每月房租支出 (元) <span class="val-tag" id="lblRent">¥2,500</span></label>
-        <input type="number" id="rentPayment" value="2500" step="100" oninput="syncSlider('rentPayment','rngRent');runEngine()">
-        <input type="range" id="rngRent" min="0" max="20000" step="100" value="2500" oninput="syncInput('rngRent','rentPayment');runEngine()">
+        <label>每月房租支出 (元) <span class="val-tag" id="lblRent">未填</span></label>
+        <input type="number" id="rentPayment" value="" placeholder="请输入每月房租，无则填 0" step="100" oninput="syncSlider('rentPayment','rngRent');runEngine()">
+        <input type="range" id="rngRent" min="0" max="20000" step="100" value="0" oninput="syncInput('rngRent','rentPayment');runEngine()">
       </div>
       <div class="form-group">
-        <label>用车与水电煤通信 (元) <span class="val-tag" id="lblCar">¥3,000</span></label>
-        <input type="number" id="carUtility" value="3000" step="100" oninput="syncSlider('carUtility','rngCar');runEngine()">
-        <input type="range" id="rngCar" min="0" max="15000" step="100" value="3000" oninput="syncInput('rngCar','carUtility');runEngine()">
+        <label>用车与水电煤通信 (元) <span class="val-tag" id="lblCar">未填</span></label>
+        <input type="number" id="carUtility" value="" placeholder="请输入交通水电通信月均开销" step="100" oninput="syncSlider('carUtility','rngCar');runEngine()">
+        <input type="range" id="rngCar" min="0" max="15000" step="100" value="0" oninput="syncInput('rngCar','carUtility');runEngine()">
       </div>
       <div class="form-group">
-        <label>餐饮购物等其他杂项 (元) <span class="val-tag" id="lblMisc">¥3,500</span></label>
-        <input type="number" id="miscExpense" value="3500" step="100" oninput="syncSlider('miscExpense','rngMisc');runEngine()">
-        <input type="range" id="rngMisc" min="0" max="20000" step="100" value="3500" oninput="syncInput('rngMisc','miscExpense');runEngine()">
+        <label>餐饮购物等其他杂项 (元) <span class="val-tag" id="lblMisc">未填</span></label>
+        <input type="number" id="miscExpense" value="" placeholder="请输入日常餐饮杂项开销" step="100" oninput="syncSlider('miscExpense','rngMisc');runEngine()">
+        <input type="range" id="rngMisc" min="0" max="20000" step="100" value="0" oninput="syncInput('rngMisc','miscExpense');runEngine()">
       </div>
 
       <div class="section-divider">个人投资偏好设定</div>
@@ -355,7 +377,10 @@
         </select>
       </div>
 
-      <button class="btn-analyze" onclick="runEngine(true)">🔄 重新执行 AI 深度诊断与重算</button>
+      <div class="btn-row">
+        <button class="btn-analyze" onclick="runEngine(true)">🔄 生成 AI 诊断报告</button>
+        <button class="btn-reset" onclick="clearAll()">清空重填</button>
+      </div>
     </div>
 
     <!-- 右侧动态输出区 -->
@@ -364,23 +389,23 @@
       <div class="kpi-row">
         <div class="kpi-box">
           <div class="kpi-label">每月家庭总收入</div>
-          <div class="kpi-value" id="kpiIncome">¥63,500</div>
-          <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">稳定底薪占比 52%</div>
+          <div class="kpi-value" id="kpiIncome">--</div>
+          <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">等待录入收入</div>
         </div>
         <div class="kpi-box">
           <div class="kpi-label">每月刚性总支出</div>
-          <div class="kpi-value" id="kpiExpense">¥18,200</div>
-          <div class="kpi-sub" id="kpiDebtRatio" style="color:var(--muted);">偿债收入比 14.5%</div>
+          <div class="kpi-value" id="kpiExpense">--</div>
+          <div class="kpi-sub" id="kpiDebtRatio" style="color:var(--muted);">等待录入支出</div>
         </div>
         <div class="kpi-box">
           <div class="kpi-label">每月净结余 (可投子弹)</div>
-          <div class="kpi-value" id="kpiSavings" style="color:var(--green);">¥45,300</div>
-          <div class="kpi-sub" id="kpiSaveRate" style="color:var(--green);">储蓄率 71.3%</div>
+          <div class="kpi-value" id="kpiSavings">--</div>
+          <div class="kpi-sub" id="kpiSaveRate" style="color:var(--muted);">--</div>
         </div>
         <div class="kpi-box">
           <div class="kpi-label">应急备用金覆盖力</div>
-          <div class="kpi-value" id="kpiRunway">54.9 个月</div>
-          <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--green);">远超6个月安全线</div>
+          <div class="kpi-value" id="kpiRunway">--</div>
+          <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--muted);">--</div>
         </div>
       </div>
 
@@ -388,11 +413,11 @@
       <div class="profile-verdict" id="profileVerdictCard">
         <div class="profile-verdict-left">
           <div class="profile-verdict-label">📋 系统根据您录入的信息自动判定，您当前的家庭财务状况属于：</div>
-          <div class="profile-verdict-name">
-            <span id="profileName">高结余·稳健成长型家庭</span>
+          <div class="profile-verdict-name" id="profileName">
+            <span style="color:var(--muted);">⏳ 待录入家庭收支数据后自动判定</span>
             <span class="profile-pill" id="profileRiskTag">稳健平衡偏好</span>
           </div>
-          <div class="profile-verdict-summary" id="profileSummary">现金流造血能力强，存量安全垫充足，负债压力可控，具备向多元化资产配置转型的优良条件。</div>
+          <div class="profile-verdict-summary" id="profileSummary">请在左侧输入您的存量资金、月收入与月支出，系统将立即为您识别财务画像并输出定制方案。</div>
         </div>
       </div>
 
@@ -400,23 +425,24 @@
       <div class="card">
         <div class="card-title">
           <span>2. 实时财务体检与化债周期资产配置模型</span>
-          <span id="regimeBadge" style="font-size:12px;color:var(--primary);font-weight:700;">动态匹配中</span>
+          <span id="regimeBadge" style="font-size:12px;color:var(--muted);font-weight:700;">等待数据输入</span>
         </div>
 
-        <div id="strategyBanner" class="strategy-banner">
-          <div class="strategy-tag" id="strategyTag">策略模式</div>
-          <div class="strategy-title" id="strategyTitle">诊断标题</div>
-          <div class="strategy-desc" id="strategyDesc">诊断详细内容</div>
+        <div id="strategyBanner" class="strategy-banner idle">
+          <div class="strategy-tag" id="strategyTag">未启动计算</div>
+          <div class="strategy-title" id="strategyTitle">请在左侧录入您的基础财务数据</div>
+          <div class="strategy-desc" id="strategyDesc">支持实时录入存款、负债、家庭月收入与月度开销，所有数字仅保存在您当前设备本地，输入后将自动匹配最贴合实际的化债周期配置方案。</div>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;">
-          <span>存量资金（<span id="dispTotalCash">¥1,000,000</span>）动态四盘分配方案：</span>
+          <span>存量资金（<span id="dispTotalCash">¥0</span>）动态四盘分配方案：</span>
           <span style="color:var(--muted);font-size:12px;">随风险偏好与现金流实时重算</span>
         </div>
         <div class="alloc-bar" id="allocBar"></div>
         <div class="alloc-grid" id="allocGrid"></div>
 
         <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px;" id="monthlyFlowAdvice">
+          <strong>📅 每月新增结余分配：</strong>录入收支数据后，此处将自动输出每月新增结余的定投分流比例。
         </div>
       </div>
 
@@ -439,16 +465,16 @@
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
               <span>每月定投追加 (元)</span>
-              <span id="simMonthlyLbl" style="color:var(--primary);">¥30,000</span>
+              <span id="simMonthlyLbl" style="color:var(--primary);">¥0</span>
             </label>
-            <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="30000" oninput="drawChart()">
+            <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="0" oninput="drawChart()">
           </div>
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
               <span>组合预期年化收益率</span>
-              <span id="simRateLbl" style="color:var(--primary);">4.2%</span>
+              <span id="simRateLbl" style="color:var(--primary);">4.0%</span>
             </label>
-            <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.2" oninput="drawChart()">
+            <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.0" oninput="drawChart()">
           </div>
           <div>
             <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
@@ -472,31 +498,109 @@
   const fmt = (n) => '¥' + Math.round(n).toLocaleString('zh-CN');
 
   function syncSlider(inpId, rngId) {
-    document.getElementById(rngId).value = document.getElementById(inpId).value || 0;
+    const val = parseFloat(document.getElementById(inpId).value);
+    document.getElementById(rngId).value = isNaN(val) ? 0 : val;
   }
   function syncInput(rngId, inpId) {
     document.getElementById(inpId).value = document.getElementById(rngId).value;
   }
 
+  function clearAll() {
+    ['cashSavings', 'totalDebt', 'myIncome', 'spouseIncome', 'extraIncome', 'loanPayment', 'rentPayment', 'carUtility', 'miscExpense'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    ['rngLoan', 'rngRent', 'rngCar', 'rngMisc'].forEach(id => {
+      document.getElementById(id).value = 0;
+    });
+    document.getElementById('riskProfile').value = 'balanced';
+    runEngine(true);
+  }
+
   function runEngine(animate = false) {
-    const cash = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
-    const debt = Math.max(0, parseFloat(document.getElementById('totalDebt').value) || 0);
+    const rawCash = document.getElementById('cashSavings').value.trim();
+    const rawDebt = document.getElementById('totalDebt').value.trim();
+    const rawMy   = document.getElementById('myIncome').value.trim();
+    const rawSp   = document.getElementById('spouseIncome').value.trim();
+    const rawEx   = document.getElementById('extraIncome').value.trim();
+    const rawLoan = document.getElementById('loanPayment').value.trim();
+    const rawRent = document.getElementById('rentPayment').value.trim();
+    const rawCar  = document.getElementById('carUtility').value.trim();
+    const rawMisc = document.getElementById('miscExpense').value.trim();
+
+    const hasAnyInput = [rawCash, rawDebt, rawMy, rawSp, rawEx, rawLoan, rawRent, rawCar, rawMisc].some(v => v !== '');
+
     const risk = document.getElementById('riskProfile').value;
+    const riskTextMap = {
+      conservative: '保守防御偏好',
+      balanced: '稳健平衡偏好',
+      growth: '积极进取偏好'
+    };
+    document.getElementById('profileRiskTag').innerText = riskTextMap[risk];
 
-    const myInc = Math.max(0, parseFloat(document.getElementById('myIncome').value) || 0);
-    const spInc = Math.max(0, parseFloat(document.getElementById('spouseIncome').value) || 0);
-    const exInc = Math.max(0, parseFloat(document.getElementById('extraIncome').value) || 0);
+    // 更新滑块右侧标签
+    document.getElementById('lblLoan').innerText = rawLoan === '' ? '未填' : fmt(parseFloat(rawLoan) || 0);
+    document.getElementById('lblRent').innerText = rawRent === '' ? '未填' : fmt(parseFloat(rawRent) || 0);
+    document.getElementById('lblCar').innerText  = rawCar  === '' ? '未填' : fmt(parseFloat(rawCar)  || 0);
+    document.getElementById('lblMisc').innerText = rawMisc === '' ? '未填' : fmt(parseFloat(rawMisc) || 0);
 
-    const loan = Math.max(0, parseFloat(document.getElementById('loanPayment').value) || 0);
-    const rent = Math.max(0, parseFloat(document.getElementById('rentPayment').value) || 0);
-    const car  = Math.max(0, parseFloat(document.getElementById('carUtility').value) || 0);
-    const misc = Math.max(0, parseFloat(document.getElementById('miscExpense').value) || 0);
+    // 若页面完全空白（首次打开），展示友好待录入引导界面
+    if (!hasAnyInput) {
+      document.getElementById('kpiIncome').innerText = '--';
+      document.getElementById('kpiStableRatio').innerText = '等待录入收入';
+      document.getElementById('kpiExpense').innerText = '--';
+      document.getElementById('kpiDebtRatio').innerText = '等待录入支出';
+      const savEl = document.getElementById('kpiSavings');
+      savEl.innerText = '--';
+      savEl.style.color = 'var(--text)';
+      document.getElementById('kpiSaveRate').innerText = '--';
+      document.getElementById('kpiSaveRate').style.color = 'var(--muted)';
+      document.getElementById('kpiRunway').innerText = '--';
+      document.getElementById('kpiRunwayTag').innerText = '--';
+      document.getElementById('kpiRunwayTag').style.color = 'var(--muted)';
 
-    // 更新滑块数字标签
-    document.getElementById('lblLoan').innerText = fmt(loan);
-    document.getElementById('lblRent').innerText = fmt(rent);
-    document.getElementById('lblCar').innerText  = fmt(car);
-    document.getElementById('lblMisc').innerText = fmt(misc);
+      const pNameEl = document.getElementById('profileName');
+      pNameEl.firstElementChild.innerText = '⏳ 待录入家庭收支数据后自动判定';
+      pNameEl.firstElementChild.style.color = 'var(--muted)';
+      document.getElementById('profileSummary').innerText = '请在左侧输入您的存量资金、月收入与月支出，系统将立即为您识别财务画像并输出定制方案。';
+
+      document.getElementById('regimeBadge').innerText = '等待数据输入';
+      const banner = document.getElementById('strategyBanner');
+      banner.className = 'strategy-banner idle';
+      document.getElementById('strategyTag').innerText = '未启动计算';
+      document.getElementById('strategyTitle').innerText = '请在左侧录入您的基础财务数据';
+      document.getElementById('strategyDesc').innerHTML = '支持实时录入存款、负债、家庭月收入与月度开销，所有数字仅保存在您当前设备本地，输入后将自动匹配最贴合实际的化债周期配置方案。';
+      document.getElementById('dispTotalCash').innerText = '¥0';
+
+      document.getElementById('allocBar').innerHTML = `<div class="alloc-seg" style="width:100%;background:#e5e7eb;"></div>`;
+      document.getElementById('allocGrid').innerHTML = `
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#10b981;"></i>防守与应急现金盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">货币基金 / T+0现金理财 / 短债基金</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#1a56db;"></i>中长端固收锁息盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">记账式国债 / 储蓄国债 / 政金债基</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#8b5cf6;"></i>权益红利与成长盘</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">红利低波ETF + 宽基指数分批定投</div></div>
+        <div class="alloc-item"><div class="alloc-head"><span class="alloc-name"><i class="dot" style="background:#f59e0b;"></i>另类避险压舱石</span><span class="alloc-pct">--%</span></div><div class="alloc-amt">待测算</div><div class="alloc-note">实物投资金条或场内黄金ETF</div></div>
+      `;
+
+      document.getElementById('monthlyFlowAdvice').innerHTML = `<strong>📅 每月新增结余分配：</strong>录入收支数据后，此处将自动输出每月新增结余的定投分流比例。`;
+      document.getElementById('actionStepsContainer').innerHTML = `
+        <div style="padding:18px;text-align:center;color:var(--muted);font-size:13.5px;background:#f9fafb;border-radius:10px;border:1px dashed var(--border);">
+          录入左侧财务参数后，系统将在此处生成针对您个人资金体量的 <strong>四步立即行动清单与专属避坑提示</strong>。
+        </div>
+      `;
+
+      document.getElementById('simMonthly').value = 0;
+      document.getElementById('simRate').value = 4.0;
+      drawChart();
+      return;
+    }
+
+    const cash = Math.max(0, parseFloat(rawCash) || 0);
+    const debt = Math.max(0, parseFloat(rawDebt) || 0);
+    const myInc = Math.max(0, parseFloat(rawMy) || 0);
+    const spInc = Math.max(0, parseFloat(rawSp) || 0);
+    const exInc = Math.max(0, parseFloat(rawEx) || 0);
+    const loan = Math.max(0, parseFloat(rawLoan) || 0);
+    const rent = Math.max(0, parseFloat(rawRent) || 0);
+    const car  = Math.max(0, parseFloat(rawCar)  || 0);
+    const misc = Math.max(0, parseFloat(rawMisc) || 0);
 
     const totalIncome = myInc + spInc + exInc;
     const stableIncome = myInc + spInc;
@@ -505,18 +609,22 @@
     const saveRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
     const debtToIncome = totalIncome > 0 ? (loan / totalIncome) * 100 : 0;
     const stableRatio = totalIncome > 0 ? (stableIncome / totalIncome) * 100 : 0;
-    const runwayMonths = totalExpense > 0 ? (cash / totalExpense) : 999;
+    const runwayMonths = totalExpense > 0 ? (cash / totalExpense) : (cash > 0 ? 999 : 0);
 
     // 刷新顶部 KPI
     document.getElementById('kpiIncome').innerText = fmt(totalIncome);
-    document.getElementById('kpiStableRatio').innerText = `稳定底薪占比 ${stableRatio.toFixed(0)}%` + (stableRatio < 55 ? '（副业依赖较高）' : '（底盘稳固）');
+    document.getElementById('kpiStableRatio').innerText = totalIncome > 0
+      ? (`稳定底薪占比 ${stableRatio.toFixed(0)}%` + (stableRatio < 55 ? '（副业依赖较高）' : '（底盘稳固）'))
+      : '尚未填写收入';
     document.getElementById('kpiExpense').innerText = fmt(totalExpense);
-    document.getElementById('kpiDebtRatio').innerText = `偿债收入比 ${debtToIncome.toFixed(1)}%` + (debtToIncome > 40 ? '（偏高警戒）' : '（安全区间）');
+    document.getElementById('kpiDebtRatio').innerText = totalIncome > 0
+      ? (`偿债收入比 ${debtToIncome.toFixed(1)}%` + (debtToIncome > 40 ? '（偏高警戒）' : '（安全区间）'))
+      : '尚未填写收入';
 
     const savEl = document.getElementById('kpiSavings');
     savEl.innerText = fmt(netSavings);
     savEl.style.color = netSavings >= 0 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('kpiSaveRate').innerText = `月度储蓄率 ${saveRate.toFixed(1)}%`;
+    document.getElementById('kpiSaveRate').innerText = totalIncome > 0 ? `月度储蓄率 ${saveRate.toFixed(1)}%` : '待补充收入';
     document.getElementById('kpiSaveRate').style.color = saveRate >= 30 ? 'var(--green)' : (saveRate >= 10 ? 'var(--amber)' : 'var(--red)');
 
     document.getElementById('kpiRunway').innerText = runwayMonths >= 120 ? '10年以上' : `${runwayMonths.toFixed(1)} 个月`;
@@ -531,13 +639,6 @@
       runTag.innerText = '流动性充裕，抗风险极强';
       runTag.style.color = 'var(--green)';
     }
-
-    const riskTextMap = {
-      conservative: '保守防御偏好',
-      balanced: '稳健平衡偏好',
-      growth: '积极进取偏好'
-    };
-    document.getElementById('profileRiskTag').innerText = riskTextMap[risk];
 
     // 核心决策引擎：判定家庭财务状况画像 + 切换 5 种策略模式与资产比例
     let profileName = '';
@@ -618,7 +719,6 @@
       }
     }
 
-    // 副业占比过高动态提醒
     if (stableRatio < 55 && exInc > 0) {
       desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性高于固定工资，因此防守现金垫已为您自动保留充足冗余保护。`;
     }
@@ -637,7 +737,6 @@
     document.getElementById('strategyDesc').innerHTML = desc;
     document.getElementById('dispTotalCash').innerText = fmt(cash);
 
-    // 计算四盘具体金额
     const amtCash   = cash * (weights.cash / 100);
     const amtBond   = cash * (weights.bond / 100);
     const amtEquity = cash * (weights.equity / 100);
@@ -665,7 +764,6 @@
       </div>
     `).join('');
 
-    // 每月新增结余动态分配建议
     const flowEl = document.getElementById('monthlyFlowAdvice');
     if (netSavings <= 0) {
       flowEl.innerHTML = `<strong>📅 每月新增结余分配：</strong>当前月度结余为 <strong>${fmt(netSavings)}</strong>，请立即梳理账单，削减弹性支出，确保每月至少留出 20% 以上的正现金流。`;
@@ -677,7 +775,6 @@
       ① <strong>${fmt(mCash)}/月</strong> 补充进活期/短债防守池；② <strong>${fmt(mBond)}/月</strong> 定投中长期利率债/固收底仓；③ <strong>${fmt(mEq)}/月</strong> 用于定投红利低波ETF、宽基指数及黄金ETF。`;
     }
 
-    // 3. 动态生成立即行动方案与专属避坑指南
     const bankSplitTip = amtCash > 500000
       ? `您防守盘金额高达 ${fmt(amtCash)}，已超过单家银行 50 万元存款保险赔付上限！务必拆分为 2-3 家国有大行或头部股份制银行存放。`
       : `即便都是货币基金或现金理财，也建议分散在 2 个不同合规银行或平台，避免单一渠道出现临时限额赎回。`;
@@ -717,7 +814,6 @@
       </div>
     `;
 
-    // 联动更新底部复利模拟器的默认参数
     const simMonthlyInput = document.getElementById('simMonthly');
     const suggestedMonthly = Math.max(0, Math.round(netSavings * 0.75 / 1000) * 1000);
     simMonthlyInput.max = Math.max(100000, suggestedMonthly * 2);
@@ -773,7 +869,6 @@
     const plotH = H - padT - padB;
     const maxVal = Math.max(...totals, 10000) * 1.08;
 
-    // 网格线与Y轴刻度
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
     ctx.fillStyle = '#6b7280';
@@ -790,7 +885,6 @@
       ctx.fillText((val / 10000).toFixed(0) + '万', padL - 8, y + 4);
     }
 
-    // X轴标签
     ctx.textAlign = 'center';
     for (let i = 0; i <= years; i++) {
       if (years > 15 && i % 2 !== 0 && i !== years) continue;
@@ -798,7 +892,6 @@
       ctx.fillText(i + '年', x, H - 8);
     }
 
-    // 绘制累计本金虚线
     ctx.beginPath();
     ctx.strokeStyle = '#9ca3af';
     ctx.lineWidth = 2;
@@ -811,7 +904,6 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 绘制复利总资产曲线与填充
     ctx.beginPath();
     totals.forEach((v, i) => {
       const x = padL + (plotW / years) * i;
@@ -822,7 +914,6 @@
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // 面积渐变
     ctx.lineTo(padL + plotW, padT + plotH);
     ctx.lineTo(padL, padT + plotH);
     ctx.closePath();
@@ -833,7 +924,6 @@
     ctx.fill();
   }
 
-  // 页面加载自动初始化运算
   window.addEventListener('DOMContentLoaded', () => runEngine(false));
 </script>
 </body>
