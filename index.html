@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>家庭财务体检与资产配置规划器</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
 <style>
   :root {
     --bg: #f4f6f9;
@@ -80,6 +81,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
   }
   .form-group { margin-bottom: 11px; }
   .form-group label {
@@ -164,6 +167,53 @@
     transition: background 0.2s;
   }
   .btn-reset:hover { background: #e5e7eb; }
+
+  /* 导出工具栏 */
+  .export-bar {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .export-bar-info {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+  }
+  .export-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-export {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+  }
+  .btn-export-img {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-export-img:hover { background: #1e40af; }
+  .btn-export-pdf {
+    background: #f0fdf4;
+    color: var(--green);
+    border-color: #bbf7d0;
+  }
+  .btn-export-pdf:hover { background: #dcfce7; }
 
   /* 右侧看板 */
   .kpi-row {
@@ -321,6 +371,32 @@
   }
   .pitfall-box strong { color: #b45309; }
 
+  /* 第四部分：未来憧憬详细看板 */
+  .dream-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 720px) { .dream-summary-grid { grid-template-columns: repeat(2, 1fr); } }
+  .dream-kpi {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+  }
+  .dream-kpi.highlight {
+    background: linear-gradient(135deg, #ebf2ff 0%, #f5f3ff 100%);
+    border-color: #c7d2fe;
+  }
+  .dream-kpi.profit {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+  .dream-kpi-lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+  .dream-kpi-val { font-size: 17px; font-weight: 800; color: var(--text); }
+  .dream-kpi-sub { font-size: 11px; color: #4b5563; margin-top: 2px; }
+
   .sim-controls {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -329,12 +405,101 @@
     background: #f9fafb;
     padding: 12px;
     border-radius: 10px;
+    border: 1px solid var(--border);
   }
   @media (max-width: 640px) { .sim-controls { grid-template-columns: 1fr; } }
   canvas { width: 100%; height: 240px; display: block; }
 
+  .bucket-yield-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+  .bucket-yield-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .bucket-yield-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 640px) { .bucket-yield-grid { grid-template-columns: 1fr; } }
+  .by-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 13px;
+    background: #fff;
+  }
+  .by-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .by-nums {
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.6;
+  }
+  .milestone-table-wrap {
+    overflow-x: auto;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  table.milestone-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: right;
+  }
+  table.milestone-table th {
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 700;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.milestone-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #111827;
+  }
+  table.milestone-table tr:last-child td {
+    border-bottom: none;
+    background: #ebf2ff;
+    font-weight: 800;
+  }
+  table.milestone-table th:first-child,
+  table.milestone-table td:first-child {
+    text-align: left;
+  }
+
+  .bottom-save-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #ebf2ff 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
   .disclaimer-footer {
-    margin-top: 20px;
+    margin-top: 12px;
     padding: 16px 20px;
     background: #f8fafc;
     border: 1px solid var(--border);
@@ -350,13 +515,30 @@
     0% { opacity: 0.55; transform: translateY(2px); }
     100% { opacity: 1; transform: translateY(0); }
   }
+
+  /* 打印 / 导出 PDF 专用样式 */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .no-print { display: none !important; }
+    .grid { display: block; }
+    .card, .kpi-box, .profile-verdict {
+      box-shadow: none !important;
+      break-inside: avoid;
+      margin-bottom: 12px;
+    }
+    header {
+      background: #1e3a8a !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
 </style>
 </head>
 <body>
 <div class="container">
   <header>
     <h1>家庭财务体检与资产配置规划器</h1>
-    <p>把家里的存款、投资、房子车子和欠款理清楚，用大白话帮您算明白：手头该留多少应急钱、3~5年安稳钱怎么放、5年以上长线钱怎么配</p>
+    <p>把家里的存款、投资、房子车子和欠款理清楚，用大白话帮您算明白：手头该留多少应急钱、3~5年安稳钱怎么放、5年以上长线钱怎么配，以及未来多年攒钱的美好蓝图</p>
     <div class="badge-row">
       <span class="privacy-badge">🔒 所有数据仅在您手机/电脑本地计算，绝不上传服务器</span>
       <span class="privacy-badge">ℹ️ 仅供家庭理财科普与数字测算参考，不构成投资建议</span>
@@ -364,8 +546,8 @@
   </header>
 
   <div class="grid">
-    <!-- 左侧录入区 -->
-    <div class="card">
+    <!-- 左侧录入区（打印 PDF 时自动隐藏） -->
+    <div class="card no-print">
       <div class="card-title">
         <span>1. 填一填家里的家底与收支</span>
         <span style="font-size:12px;color:var(--primary);font-weight:600;">填完自动出结果</span>
@@ -481,134 +663,215 @@
       </div>
     </div>
 
-    <!-- 右侧动态输出区 -->
+    <!-- 右侧动态输出区（整块可导出为高清图片或 PDF） -->
     <div id="outputPanel">
-      <!-- 顶部6个核心指标 -->
-      <div class="kpi-row">
-        <div class="kpi-box">
-          <div class="kpi-label">全部家底总值（含房车存款）</div>
-          <div class="kpi-value" id="kpiTotalAsset">--</div>
-          <div class="kpi-sub" id="kpiAssetSplit" style="color:var(--muted);">等待填写家底</div>
+      <!-- 顶部一键导出栏 -->
+      <div class="export-bar no-print">
+        <div class="export-bar-info">
+          📑 <strong>家庭专属财务体检诊断表</strong> <span id="reportDateTag" style="font-size:12px;color:var(--muted);font-weight:400;margin-left:6px;"></span>
         </div>
-        <div class="kpi-box">
-          <div class="kpi-label">真正属于自己的净家底（减掉欠款）</div>
-          <div class="kpi-value" id="kpiNetWorth">--</div>
-          <div class="kpi-sub" id="kpiLeverage" style="color:var(--muted);">欠款占总资产 --</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">手头能灵活调配的金融钱</div>
-          <div class="kpi-value" id="kpiFinAsset">--</div>
-          <div class="kpi-sub" id="kpiFinRatio" style="color:var(--muted);">含存款/理财/股票/黄金</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">全家每月总到手收入</div>
-          <div class="kpi-value" id="kpiIncome">--</div>
-          <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">等待填写收入</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">每月能攒下来的钱（收入减支出）</div>
-          <div class="kpi-value" id="kpiSavings">--</div>
-          <div class="kpi-sub" id="kpiSaveRate" style="color:var(--muted);">--</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">万一断了收入，活钱能撑多久</div>
-          <div class="kpi-value" id="kpiRunway">--</div>
-          <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--muted);">--</div>
+        <div class="export-btns">
+          <button class="btn-export btn-export-img" onclick="exportReportImage(this)">🖼️ 一键保存高清长图</button>
+          <button class="btn-export btn-export-pdf" onclick="exportReportPDF()">📄 导出/打印为 PDF</button>
         </div>
       </div>
 
-      <!-- 系统自动判定当前家庭财务状况画像 -->
-      <div class="profile-verdict" id="profileVerdictCard">
-        <div class="profile-verdict-left">
-          <div class="profile-verdict-label">📋 综合您家里的家底、欠款和每月收支，系统帮您做出的整体判断是：</div>
-          <div class="profile-verdict-name" id="profileName">
-            <span style="color:var(--muted);">⏳ 请在左侧填好家里家底和收支，马上出诊断</span>
-            <span class="profile-pill" id="profileRiskTag">稳中求进心态</span>
+      <!-- 真正被截图保存的核心诊断区容器 -->
+      <div id="printableReportArea">
+        <!-- 顶部6个核心指标 -->
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">全部家底总值（含房车存款）</div>
+            <div class="kpi-value" id="kpiTotalAsset">--</div>
+            <div class="kpi-sub" id="kpiAssetSplit" style="color:var(--muted);">等待填写家底</div>
           </div>
-          <div class="profile-verdict-summary" id="profileSummary">把左边的存款、投资、房子车子、欠款以及每月收入开销填进去，下面会用大白话告诉您家里的钱放得合不合理、该怎么调整。</div>
-        </div>
-      </div>
-
-      <!-- 2. 全盘资产结构透视与金融资产配置模型 -->
-      <div class="card">
-        <div class="card-title">
-          <span>2. 家里家底结构体检与“四笔钱”分配参考</span>
-          <span id="regimeBadge" style="font-size:12px;color:var(--muted);font-weight:700;">等待填写数据</span>
-        </div>
-
-        <div id="strategyBanner" class="strategy-banner idle">
-          <div class="strategy-tag" id="strategyTag">尚未开始测算</div>
-          <div class="strategy-title" id="strategyTitle">请在左侧填写您家的存款、资产、欠款和每月收支</div>
-          <div class="strategy-desc" id="strategyDesc">系统会把您的钱按<strong>“应急活钱（1年内随时用）”、“安稳底仓（3~5年不动）”、“长线增值（5年以上不动）”、“避险压箱底（黄金）”</strong>分成四笔钱，帮您算清楚每笔钱大概放多少更合适。</div>
-        </div>
-
-        <div class="structure-box" id="assetStructureNote">
-          <strong>📊 家里全部家底分布情况：</strong>填好资产后，这里会帮您看清“房子车子等不动产”是不是占得太重、手头的活钱够不够用。
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;flex-wrap:wrap;gap:6px;">
-          <span>手头可调配的金融钱（<span id="dispTotalFin">¥0</span>）按使用时间分成“四笔钱”参考：</span>
-          <span style="color:var(--muted);font-size:12px;">已自动对比您现有的存款、理财、股票和黄金</span>
-        </div>
-        <div class="alloc-bar" id="allocBar"></div>
-        <div class="alloc-grid" id="allocGrid"></div>
-
-        <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px;" id="monthlyFlowAdvice">
-          <strong>📅 每个月新攒下来的钱怎么分：</strong>填好收支后，这里会帮您算好每月结余该往哪个口袋里放。
-        </div>
-      </div>
-
-      <!-- 3. 规划落地参考步骤与常见风险提示 -->
-      <div class="card">
-        <div class="card-title">
-          <span>3. 手把手调整参考步骤（附带避坑提醒）</span>
-          <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 投资有风险，拿不准别乱动</span>
-        </div>
-        <div id="actionStepsContainer"></div>
-      </div>
-
-      <!-- 4. 长周期复利数学模型演示 -->
-      <div class="card">
-        <div class="card-title">
-          <span>4. 坚持攒钱利滚利测算演示（纯数学推演，不代表实际承诺）</span>
-          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后模拟测算总值：¥0</span>
-        </div>
-        <div class="sim-controls">
-          <div>
-            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>每月坚持往里攒多少钱 (元)</span>
-              <span id="simMonthlyLbl" style="color:var(--primary);">¥0</span>
-            </label>
-            <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="0" oninput="drawChart()">
+          <div class="kpi-box">
+            <div class="kpi-label">真正属于自己的净家底（减掉欠款）</div>
+            <div class="kpi-value" id="kpiNetWorth">--</div>
+            <div class="kpi-sub" id="kpiLeverage" style="color:var(--muted);">欠款占总资产 --</div>
           </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>假设平均每年收益率</span>
-              <span id="simRateLbl" style="color:var(--primary);">4.0%</span>
-            </label>
-            <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.0" oninput="drawChart()">
+          <div class="kpi-box">
+            <div class="kpi-label">手头能灵活调配的金融钱</div>
+            <div class="kpi-value" id="kpiFinAsset">--</div>
+            <div class="kpi-sub" id="kpiFinRatio" style="color:var(--muted);">含存款/理财/股票/黄金</div>
           </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
-              <span>打算坚持攒多少年</span>
-              <span id="simYearsLbl" style="color:var(--primary);">10 年</span>
-            </label>
-            <input type="range" id="simYears" min="3" max="30" step="1" value="10" oninput="drawChart()">
+          <div class="kpi-box">
+            <div class="kpi-label">全家每月总到手收入</div>
+            <div class="kpi-value" id="kpiIncome">--</div>
+            <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">等待填写收入</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">每月能攒下来的钱（收入减支出）</div>
+            <div class="kpi-value" id="kpiSavings">--</div>
+            <div class="kpi-sub" id="kpiSaveRate" style="color:var(--muted);">--</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">万一断了收入，活钱能撑多久</div>
+            <div class="kpi-value" id="kpiRunway">--</div>
+            <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--muted);">--</div>
           </div>
         </div>
-        <canvas id="growthCanvas" width="760" height="240"></canvas>
-        <div style="display:flex;justify-content:center;gap:20px;font-size:12px;margin-top:8px;color:var(--muted);">
-          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>连本带利测算总金额（不含房子车子）</span>
-          <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>自己实打实掏出来的本金</span>
+
+        <!-- 系统自动判定当前家庭财务状况画像 -->
+        <div class="profile-verdict" id="profileVerdictCard">
+          <div class="profile-verdict-left">
+            <div class="profile-verdict-label">📋 综合您家里的家底、欠款和每月收支，系统帮您做出的整体判断是：</div>
+            <div class="profile-verdict-name" id="profileName">
+              <span style="color:var(--muted);">⏳ 请在左侧填好家里家底和收支，马上出诊断</span>
+              <span class="profile-pill" id="profileRiskTag">稳中求进心态</span>
+            </div>
+            <div class="profile-verdict-summary" id="profileSummary">把左边的存款、投资、房子车子、欠款以及每月收入开销填进去，下面会用大白话告诉您家里的钱放得合不合理、该怎么调整。</div>
+          </div>
+        </div>
+
+        <!-- 2. 全盘资产结构透视与金融资产配置模型 -->
+        <div class="card">
+          <div class="card-title">
+            <span>2. 家里家底结构体检与“四笔钱”分配参考</span>
+            <span id="regimeBadge" style="font-size:12px;color:var(--muted);font-weight:700;">等待填写数据</span>
+          </div>
+
+          <div id="strategyBanner" class="strategy-banner idle">
+            <div class="strategy-tag" id="strategyTag">尚未开始测算</div>
+            <div class="strategy-title" id="strategyTitle">请在左侧填写您家的存款、资产、欠款和每月收支</div>
+            <div class="strategy-desc" id="strategyDesc">系统会把您的钱按<strong>“应急活钱（1年内随时用）”、“安稳底仓（3~5年不动）”、“长线增值（5年以上不动）”、“避险压箱底（黄金）”</strong>分成四笔钱，帮您算清楚每笔钱大概放多少更合适。</div>
+          </div>
+
+          <div class="structure-box" id="assetStructureNote">
+            <strong>📊 家里全部家底分布情况：</strong>填好资产后，这里会帮您看清“房子车子等不动产”是不是占得太重、手头的活钱够不够用。
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;flex-wrap:wrap;gap:6px;">
+            <span>手头可调配的金融钱（<span id="dispTotalFin">¥0</span>）按使用时间分成“四笔钱”参考：</span>
+            <span style="color:var(--muted);font-size:12px;">已自动对比您现有的存款、理财、股票和黄金</span>
+          </div>
+          <div class="alloc-bar" id="allocBar"></div>
+          <div class="alloc-grid" id="allocGrid"></div>
+
+          <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px;" id="monthlyFlowAdvice">
+            <strong>📅 每个月新攒下来的钱怎么分：</strong>填好收支后，这里会帮您算好每月结余该往哪个口袋里放。
+          </div>
+        </div>
+
+        <!-- 3. 规划落地参考步骤与常见风险提示 -->
+        <div class="card">
+          <div class="card-title">
+            <span>3. 手把手调整参考步骤（附带避坑提醒）</span>
+            <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 投资有风险，拿不准别乱动</span>
+          </div>
+          <div id="actionStepsContainer"></div>
+        </div>
+
+        <!-- 4. 未来财富憧憬：攒钱本金与理想收益全景推演 -->
+        <div class="card">
+          <div class="card-title">
+            <span>4. 未来财富憧憬：坚持攒钱与“钱生钱”全景推演（纯数学模型演示）</span>
+            <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后连本带利测算总值：¥0</span>
+          </div>
+
+          <!-- 四张核心憧憬数字汇总卡片 -->
+          <div class="dream-summary-grid">
+            <div class="dream-kpi highlight">
+              <div class="dream-kpi-lbl" id="dreamEndLbl">10年后连本带利总家底</div>
+              <div class="dream-kpi-val" style="color:var(--primary);" id="dreamTotalVal">¥0</div>
+              <div class="dream-kpi-sub" id="dreamMultipleSub">本金翻了 1.00 倍</div>
+            </div>
+            <div class="dream-kpi">
+              <div class="dream-kpi-lbl">自己实打实掏出来的总本金</div>
+              <div class="dream-kpi-val" id="dreamPrincipalVal">¥0</div>
+              <div class="dream-kpi-sub" id="dreamPrincipalBreak">现有底金 ¥0 + 累计新攒 ¥0</div>
+            </div>
+            <div class="dream-kpi profit">
+              <div class="dream-kpi-lbl">理想状态下“钱生钱”总收益</div>
+              <div class="dream-kpi-val" style="color:var(--green);" id="dreamProfitVal">+¥0</div>
+              <div class="dream-kpi-sub" id="dreamProfitShare">纯收益占期末总钱的 0%</div>
+            </div>
+            <div class="dream-kpi">
+              <div class="dream-kpi-lbl">最后一年平均每月躺赚利息</div>
+              <div class="dream-kpi-val" style="color:var(--amber);" id="dreamPassiveMonth">¥0/月</div>
+              <div class="dream-kpi-sub">仅作理想复利数学演示</div>
+            </div>
+          </div>
+
+          <!-- 滑块微调区 -->
+          <div class="sim-controls">
+            <div>
+              <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+                <span>每月坚持往里攒多少钱 (元)</span>
+                <span id="simMonthlyLbl" style="color:var(--primary);">¥0</span>
+              </label>
+              <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="0" oninput="drawChart()">
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+                <span>假设组合综合年收益率</span>
+                <span id="simRateLbl" style="color:var(--primary);">4.0%</span>
+              </label>
+              <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.0" oninput="drawChart()">
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+                <span>打算坚持攒多少年</span>
+                <span id="simYearsLbl" style="color:var(--primary);">10 年</span>
+              </label>
+              <input type="range" id="simYears" min="3" max="30" step="1" value="10" oninput="drawChart()">
+            </div>
+          </div>
+
+          <!-- 复利增长曲线图 -->
+          <canvas id="growthCanvas" width="760" height="240"></canvas>
+          <div style="display:flex;justify-content:center;gap:20px;font-size:12px;margin-top:8px;color:var(--muted);">
+            <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>连本带利测算总金额（不含房子车子）</span>
+            <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>自己实打实掏出来的累计本金</span>
+          </div>
+
+          <!-- 四笔钱各自理想收益贡献拆解 -->
+          <div class="bucket-yield-section">
+            <div class="bucket-yield-title">
+              <span>✨ 理想状态下，“四笔钱”各自能帮您赚多少？（按当前配置比例拆解）</span>
+              <span style="font-size:11.5px;color:var(--muted);font-weight:400;">各项假设收益率随上方滑块等比例联动</span>
+            </div>
+            <div class="bucket-yield-grid" id="bucketYieldGrid"></div>
+
+            <!-- 关键年份里程碑成长表 -->
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:12px;margin-bottom:6px;">
+              🗓️ 未来关键年份财富里程碑一览表（看看坚持攒钱的时间魔力）：
+            </div>
+            <div class="milestone-table-wrap">
+              <table class="milestone-table" id="milestoneTable">
+                <thead>
+                  <tr>
+                    <th>时间节点</th>
+                    <th>自己累计掏出本金</th>
+                    <th>理想状态累计赚出收益</th>
+                    <th>连本带利总金融家底</th>
+                  </tr>
+                </thead>
+                <tbody id="milestoneBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部合规免责声明（随长图和 PDF 一起保存，确保分享出去永远带着合规提示） -->
+        <div class="disclaimer-footer">
+          <strong>重要提示与免责声明：</strong><br>
+          1. 本工具只是帮您梳理家里账本和学习基础理财常识的计算器，<strong>不推荐任何具体的股票、基金、保险、银行理财或黄金产品</strong>，也不代表任何银行或证券机构的官方意见。<br>
+          2. 页面里算出来的分配比例、假设年收益率、理想收益明细和曲线图，都是按通用理财公式做的<strong>纯数学推演，不保证未来一定能赚到这么多钱，更不是“保本保息”承诺</strong>。<br>
+          3. 买基金、股票、黄金甚至买卖房子都有涨有跌，可能会亏本。您真要动钱做投资或提前还房贷之前，一定要看清官方的产品说明书和风险提示，拿不准的地方建议去正规银行或持牌机构找专业人员当面咨询。
         </div>
       </div>
 
-      <!-- 底部合规免责声明 -->
-      <div class="disclaimer-footer">
-        <strong>重要提示与免责声明：</strong><br>
-        1. 本工具只是帮您梳理家里账本和学习基础理财常识的计算器，<strong>不推荐任何具体的股票、基金、保险、银行理财或黄金产品</strong>，也不代表任何银行或证券机构的官方意见。<br>
-        2. 页面里算出来的分配比例、假设年收益率和曲线图，都是按通用理财公式做的<strong>纯数学推演，不保证未来一定能赚到这么多钱，更不是“保本保息”承诺</strong>。<br>
-        3. 买基金、股票、黄金甚至买卖房子都有涨有跌，可能会亏本。您真要动钱做投资或提前还房贷之前，一定要看清官方的产品说明书和风险提示，拿不准的地方建议去正规银行或持牌机构找专业人员当面咨询。
+      <!-- 页面最底部一键保存行动卡片 -->
+      <div class="bottom-save-card no-print">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);">💾 觉得这份体检报告对家里有帮助？</div>
+          <div style="font-size:12.5px;color:#4b5563;margin-top:2px;">所有数据不会保存在网上，关闭网页就会清空，建议保存一份长图或 PDF 到手机/电脑里随时对照。</div>
+        </div>
+        <div class="export-btns">
+          <button class="btn-export btn-export-img" onclick="exportReportImage(this)">🖼️ 保存高清长图到相册</button>
+          <button class="btn-export btn-export-pdf" onclick="exportReportPDF()">📄 导出/打印为 PDF</button>
+        </div>
       </div>
     </div>
   </div>
@@ -616,6 +879,9 @@
 
 <script>
   const fmt = (n) => '¥' + Math.round(n).toLocaleString('zh-CN');
+
+  // 全局缓存当前四笔钱权重，供第四部分分项收益明细联动使用
+  let currentWeights = { cash: 25, bond: 35, equity: 30, gold: 10 };
 
   function syncSlider(inpId, rngId) {
     const val = parseFloat(document.getElementById(inpId).value);
@@ -669,6 +935,7 @@
     document.getElementById('lblMisc').innerText = raw.miscExpense === '' ? '未填' : fmt(parseFloat(raw.miscExpense) || 0);
 
     if (!hasAnyInput) {
+      currentWeights = { cash: 25, bond: 35, equity: 30, gold: 10 };
       document.getElementById('kpiTotalAsset').innerText = '--';
       document.getElementById('kpiAssetSplit').innerText = '等待填写家底';
       document.getElementById('kpiNetWorth').innerText = '--';
@@ -745,9 +1012,9 @@
     const misc      = Math.max(0, parseFloat(raw.miscExpense) || 0);
 
     // 三大标准口径资产归集
-    const liquidTotal     = cash + provident;                   // 随时能动用的活钱 + 专项账户
-    const investTotal     = bond + equity + gold + insVal;      // 已经投出去的金融钱
-    const fixedOtherTotal = house + carVal + otherVal;          // 房子车子等实物及其他
+    const liquidTotal     = cash + provident;
+    const investTotal     = bond + equity + gold + insVal;
+    const fixedOtherTotal = house + carVal + otherVal;
     const totalAssets     = liquidTotal + investTotal + fixedOtherTotal;
     const netWorth        = totalAssets - debt;
 
@@ -933,6 +1200,8 @@
       }
     }
 
+    currentWeights = weights;
+
     if (stableRatio < 55 && exInc > 0) {
       desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入来源提醒：</span>您家有 <strong>${(100 - stableRatio).toFixed(0)}%</strong> 的收入靠副业、房租或奖金，不如死工资那么稳定，实际操作时建议在“应急活钱”里多留两三个月的生活费。`;
     }
@@ -1100,9 +1369,9 @@
       </div>
     `;
 
-    // 联动更新底部复利模拟器的起始本金
+    // 联动更新底部复利模拟器的起始本金与每月攒钱默认值
     const simMonthlyInput = document.getElementById('simMonthly');
-    const suggestedMonthly = Math.max(0, Math.round(netSavings * 0.75 / 1000) * 1000);
+    const suggestedMonthly = Math.max(0, Math.round(netSavings * 0.8 / 500) * 500);
     simMonthlyInput.max = Math.max(100000, suggestedMonthly * 2);
     simMonthlyInput.value = suggestedMonthly;
     document.getElementById('simRate').value = expectedRate.toFixed(1);
@@ -1115,6 +1384,18 @@
       void panel.offsetWidth;
       panel.classList.add('flash');
     }
+  }
+
+  // 辅助：单笔资金复利计算函数
+  function calcCompound(startPrincipal, monthlyAdd, annualRatePct, years) {
+    const r = (annualRatePct / 100) / 12;
+    let total = startPrincipal;
+    let principal = startPrincipal;
+    for (let m = 0; m < years * 12; m++) {
+      total = (total + monthlyAdd) * (1 + r);
+      principal += monthlyAdd;
+    }
+    return { total, principal, profit: total - principal };
   }
 
   function drawChart() {
@@ -1148,8 +1429,98 @@
       principals.push(curPrincipal);
     }
 
-    document.getElementById('simEndTotal').innerText = `${years}年后连本带利测算总值：${fmt(curTotal)}`;
+    const totalProfit = curTotal - curPrincipal;
+    const newSavedPrincipal = monthlyAdd * 12 * years;
+    const multiple = curPrincipal > 0 ? (curTotal / curPrincipal) : 1;
+    const profitPctOfTotal = curTotal > 0 ? (totalProfit / curTotal) * 100 : 0;
+    const lastYearMonthlyPassive = (curTotal * (annualRate / 100)) / 12;
 
+    // 更新顶部标题及 4 张憧憬汇总卡片
+    document.getElementById('simEndTotal').innerText = `${years}年后连本带利测算总值：${fmt(curTotal)}`;
+    document.getElementById('dreamEndLbl').innerText = `${years}年后连本带利总家底`;
+    document.getElementById('dreamTotalVal').innerText = fmt(curTotal);
+    document.getElementById('dreamMultipleSub').innerText = curPrincipal > 0
+      ? `总本金增长了 ${((multiple - 1) * 100).toFixed(0)}%（约 ${multiple.toFixed(2)} 倍）`
+      : '请滑选每月攒钱金额';
+
+    document.getElementById('dreamPrincipalVal').innerText = fmt(curPrincipal);
+    document.getElementById('dreamPrincipalBreak').innerText = `现有底金 ${fmt(startFin)} + ${years}年新攒 ${fmt(newSavedPrincipal)}`;
+
+    document.getElementById('dreamProfitVal').innerText = '+' + fmt(totalProfit);
+    document.getElementById('dreamProfitShare').innerText = `纯收益占期末总钱的 ${profitPctOfTotal.toFixed(1)}%`;
+
+    document.getElementById('dreamPassiveMonth').innerText = fmt(lastYearMonthlyPassive) + '/月';
+
+    // 拆解“四笔钱”各自在理想状态下的本金与收益贡献
+    // 基准假设收益率（随用户滑块 annualRate 同比缩放，确保分项合计逻辑自洽）
+    const baseRates = { cash: 1.6, bond: 3.0, equity: 6.8, gold: 4.5 };
+    const weightedBase =
+      (currentWeights.cash / 100) * baseRates.cash +
+      (currentWeights.bond / 100) * baseRates.bond +
+      (currentWeights.equity / 100) * baseRates.equity +
+      (currentWeights.gold / 100) * baseRates.gold;
+    const scaleFactor = weightedBase > 0 ? (annualRate / weightedBase) : 1;
+
+    const bucketDefs = [
+      { key: 'cash',   label: '1. 应急活钱（1年内随时用）', color: '#10b981', w: currentWeights.cash,   r: baseRates.cash * scaleFactor },
+      { key: 'bond',   label: '2. 安稳底仓（3~5年不动）',   color: '#1a56db', w: currentWeights.bond,   r: baseRates.bond * scaleFactor },
+      { key: 'equity', label: '3. 长线增值（5年以上不动）', color: '#8b5cf6', w: currentWeights.equity, r: baseRates.equity * scaleFactor },
+      { key: 'gold',   label: '4. 避险压箱底（黄金配置）',   color: '#f59e0b', w: currentWeights.gold,   r: baseRates.gold * scaleFactor }
+    ];
+
+    document.getElementById('bucketYieldGrid').innerHTML = bucketDefs.map(b => {
+      if (b.w === 0) {
+        return `
+          <div class="by-card" style="background:#f9fafb;opacity:0.8;">
+            <div class="by-top">
+              <span><i class="dot" style="background:${b.color};"></i>${b.label}</span>
+              <span style="color:var(--muted);">占比 0%</span>
+            </div>
+            <div class="by-nums" style="color:var(--muted);">当前方案下暂未分配此项资金（累计本金 ¥0，测算收益 ¥0）</div>
+          </div>
+        `;
+      }
+      const bStart = startFin * (b.w / 100);
+      const bMonthly = monthlyAdd * (b.w / 100);
+      const res = calcCompound(bStart, bMonthly, b.r, years);
+      return `
+        <div class="by-card">
+          <div class="by-top">
+            <span><i class="dot" style="background:${b.color};"></i>${b.label}（占${b.w}%）</span>
+            <span style="color:${b.color};">假设年化 ${b.r.toFixed(1)}%</span>
+          </div>
+          <div class="by-nums">
+            • ${years}年累计投入本金：<strong>${fmt(res.principal)}</strong><br>
+            • 理想状态赚出纯收益：<strong style="color:var(--green);">+${fmt(res.profit)}</strong><br>
+            • 期末该口袋连本带利：<strong>${fmt(res.total)}</strong>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // 生成关键年份里程碑明细表
+    const candidateYears = [1, 2, 3, 5, 8, 10, 15, 20, 25, 30].filter(y => y < years);
+    // 最多取 5 个中间节点 + 最终目标年份
+    const step = Math.max(1, Math.ceil(candidateYears.length / 5));
+    const milestoneYears = candidateYears.filter((_, idx) => idx % step === 0);
+    milestoneYears.push(years);
+
+    document.getElementById('milestoneBody').innerHTML = milestoneYears.map((y, idx) => {
+      const isLast = idx === milestoneYears.length - 1;
+      const pVal = principals[y];
+      const tVal = totals[y];
+      const gVal = tVal - pVal;
+      return `
+        <tr>
+          <td>${isLast ? `🎯 第 ${y} 年（目标达成）` : `第 ${y} 年末`}</td>
+          <td>${fmt(pVal)}</td>
+          <td style="color:var(--green);font-weight:700;">+${fmt(gVal)}</td>
+          <td style="color:var(--primary);font-weight:800;">${fmt(tVal)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    // 绘制折线图
     const canvas = document.getElementById('growthCanvas');
     const ctx = canvas.getContext('2d');
     const W = canvas.width;
@@ -1216,7 +1587,48 @@
     ctx.fill();
   }
 
-  window.addEventListener('DOMContentLoaded', () => runEngine(false));
+  // 一键导出高清长图 PNG
+  async function exportReportImage(btnEl) {
+    const target = document.getElementById('printableReportArea');
+    const oldText = btnEl.innerHTML;
+    btnEl.innerHTML = '⏳ 正在生成高清长图...';
+    btnEl.disabled = true;
+
+    try {
+      if (typeof html2canvas === 'undefined') {
+        alert('截图组件仍在加载中，请稍等2秒再点一次，或直接点击旁边的“导出/打印为 PDF”保存！');
+        return;
+      }
+      const canvas = await html2canvas(target, {
+        scale: 2,
+        backgroundColor: '#f4f6f9',
+        useCORS: true,
+        logging: false
+      });
+      const link = document.createElement('a');
+      const today = new Date().toISOString().slice(0, 10);
+      link.download = `家庭财务体检与资产配置报告_${today}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (e) {
+      alert('长图导出遇到浏览器限制，已为您自动切换为 PDF/打印保存模式！');
+      window.print();
+    } finally {
+      btnEl.innerHTML = oldText;
+      btnEl.disabled = false;
+    }
+  }
+
+  // 一键导出 / 打印为 PDF
+  function exportReportPDF() {
+    window.print();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const todayStr = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('reportDateTag').innerText = `测算日期：${todayStr}`;
+    runEngine(false);
+  });
 </script>
 </body>
 </html>
