@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家庭财务与化债规划智能诊断系统</title>
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --primary: #1a56db;
+    --primary-light: #ebf2ff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 16px;
+  }
+  .container { max-width: 1240px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1a56db 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(26, 86, 219, 0.15);
+  }
+  header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  header p { font-size: 13px; opacity: 0.9; }
+  .privacy-badge {
+    display: inline-block;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.16);
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .preset-btn {
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .preset-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+  .form-group { margin-bottom: 13px; }
+  .form-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  .form-group label span.val-tag { color: var(--primary); font-weight: 700; }
+  input[type="number"], select {
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    background: #fff;
+  }
+  input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.12);
+  }
+  input[type="range"] { width: 100%; margin-top: 5px; accent-color: var(--primary); cursor: pointer; }
+  .section-divider {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 16px 0 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .btn-analyze {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .btn-analyze:hover { background: #1e40af; }
+
+  /* 右侧看板 */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 640px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+  .kpi-box {
+    background: var(--card);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .kpi-value { font-size: 18px; font-weight: 800; color: var(--text); }
+  .kpi-sub { font-size: 11px; margin-top: 3px; font-weight: 600; }
+
+  .strategy-banner {
+    padding: 16px 18px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border-left: 5px solid var(--primary);
+    background: var(--primary-light);
+  }
+  .strategy-banner.danger { background: var(--red-bg); border-left-color: var(--red); }
+  .strategy-banner.warn { background: var(--amber-bg); border-left-color: var(--amber); }
+  .strategy-banner.good { background: var(--green-bg); border-left-color: var(--green); }
+  .strategy-banner.vip { background: var(--purple-bg); border-left-color: var(--purple); }
+  .strategy-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.07);
+    margin-bottom: 6px;
+  }
+  .strategy-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .strategy-desc { font-size: 13.5px; color: #374151; }
+
+  .alloc-bar {
+    height: 16px;
+    border-radius: 99px;
+    overflow: hidden;
+    display: flex;
+    margin: 14px 0;
+    background: #e5e7eb;
+  }
+  .alloc-seg { height: 100%; transition: width 0.35s ease; }
+  .alloc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 640px) { .alloc-grid { grid-template-columns: 1fr; } }
+  .alloc-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    background: #fafafa;
+  }
+  .alloc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .alloc-name { font-size: 13px; font-weight: 700; }
+  .alloc-pct { font-size: 13px; font-weight: 800; color: var(--primary); }
+  .alloc-amt { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .alloc-note { font-size: 12px; color: var(--muted); }
+
+  .step-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: #fff;
+  }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .step-num {
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .step-title { font-size: 14.5px; font-weight: 700; }
+  .step-action { font-size: 13px; color: #374151; margin-bottom: 8px; }
+  .pitfall-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 12.5px;
+    color: #92400e;
+  }
+  .pitfall-box strong { color: #b45309; }
+
+  .sim-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 10px;
+  }
+  @media (max-width: 640px) { .sim-controls { grid-template-columns: 1fr; } }
+  canvas { width: 100%; height: 240px; display: block; }
+  .flash { animation: pulseHighlight 0.45s ease; }
+  @keyframes pulseHighlight {
+    0% { opacity: 0.55; transform: translateY(2px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>家庭财务与宏观化债周期智能诊断系统</h1>
+    <p>结合低利率与债务重组周期，动态重算家庭现金流、四盘资产配置比例、立即行动步骤与专属避坑清单</p>
+    <span class="privacy-badge">🔒 纯本地浏览器实时运算，财务数据绝不上传服务器</span>
+  </header>
+
+  <div class="grid">
+    <!-- 左侧录入区 -->
+    <div class="card">
+      <div class="card-title">
+        <span>1. 家庭财务参数录入</span>
+        <span style="font-size:12px;color:var(--primary);font-weight:600;">实时动态联动</span>
+      </div>
+
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">快速切换典型画像测试（观察右侧方案彻底重构）：</div>
+      <div class="presets">
+        <button class="preset-btn" onclick="applyPreset('standard')">💼 当前标准型 (100万存款)</button>
+        <button class="preset-btn" onclick="applyPreset('highDebt')">⚠️ 高负债承压型 (月供高)</button>
+        <button class="preset-btn" onclick="applyPreset('tight')">🚨 现金流吃紧型 (结余低)</button>
+        <button class="preset-btn" onclick="applyPreset('hnw')">👑 高净值阶梯型 (500万)</button>
+      </div>
+
+      <div class="section-divider">存量资产与负债</div>
+      <div class="form-group">
+        <label>现有可用现金/定期存款 (元)</label>
+        <input type="number" id="cashSavings" value="1000000" step="10000" oninput="runEngine()">
+      </div>
+      <div class="form-group">
+        <label>剩余总负债/贷款余额 (元)</label>
+        <input type="number" id="totalDebt" value="320000" step="10000" oninput="runEngine()">
+      </div>
+      <div class="form-group">
+        <label>风险偏好等级</label>
+        <select id="riskProfile" onchange="runEngine()">
+          <option value="conservative">保守型（绝不接受本金明显回撤）</option>
+          <option value="balanced" selected>稳健平衡型（可接受小幅波动换取跑赢通胀）</option>
+          <option value="growth">积极进取型（追求长期资产增值与红利复利）</option>
+        </select>
+      </div>
+
+      <div class="section-divider">每月家庭收入明细</div>
+      <div class="form-group">
+        <label>本人税后月薪 (元)</label>
+        <input type="number" id="myIncome" value="25000" step="500" oninput="runEngine()">
+      </div>
+      <div class="form-group">
+        <label>配偶税后月薪 (元)</label>
+        <input type="number" id="spouseIncome" value="8000" step="500" oninput="runEngine()">
+      </div>
+      <div class="form-group">
+        <label>每月额外/副业/奖金收入 (元)</label>
+        <input type="number" id="extraIncome" value="30500" step="1000" oninput="runEngine()">
+      </div>
+
+      <div class="section-divider">每月刚性支出与还贷</div>
+      <div class="form-group">
+        <label>学费/房贷等月供 (元) <span class="val-tag" id="lblLoan">¥9,200</span></label>
+        <input type="number" id="loanPayment" value="9200" step="200" oninput="syncSlider('loanPayment','rngLoan');runEngine()">
+        <input type="range" id="rngLoan" min="0" max="40000" step="200" value="9200" oninput="syncInput('rngLoan','loanPayment');runEngine()">
+      </div>
+      <div class="form-group">
+        <label>每月房租支出 (元) <span class="val-tag" id="lblRent">¥2,500</span></label>
+        <input type="number" id="rentPayment" value="2500" step="100" oninput="syncSlider('rentPayment','rngRent');runEngine()">
+        <input type="range" id="rngRent" min="0" max="20000" step="100" value="2500" oninput="syncInput('rngRent','rentPayment');runEngine()">
+      </div>
+      <div class="form-group">
+        <label>用车与水电煤通信 (元) <span class="val-tag" id="lblCar">¥3,000</span></label>
+        <input type="number" id="carUtility" value="3000" step="100" oninput="syncSlider('carUtility','rngCar');runEngine()">
+        <input type="range" id="rngCar" min="0" max="15000" step="100" value="3000" oninput="syncInput('rngCar','carUtility');runEngine()">
+      </div>
+      <div class="form-group">
+        <label>餐饮购物等其他杂项 (元) <span class="val-tag" id="lblMisc">¥3,500</span></label>
+        <input type="number" id="miscExpense" value="3500" step="100" oninput="syncSlider('miscExpense','rngMisc');runEngine()">
+        <input type="range" id="rngMisc" min="0" max="20000" step="100" value="3500" oninput="syncInput('rngMisc','miscExpense');runEngine()">
+      </div>
+
+      <button class="btn-analyze" onclick="runEngine(true)">🔄 重新执行 AI 深度诊断与重算</button>
+    </div>
+
+    <!-- 右侧动态输出区 -->
+    <div id="outputPanel">
+      <!-- 顶部4个核心指标 -->
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">每月家庭总收入</div>
+          <div class="kpi-value" id="kpiIncome">¥63,500</div>
+          <div class="kpi-sub" id="kpiStableRatio" style="color:var(--muted);">稳定底薪占比 52%</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">每月刚性总支出</div>
+          <div class="kpi-value" id="kpiExpense">¥18,200</div>
+          <div class="kpi-sub" id="kpiDebtRatio" style="color:var(--muted);">偿债收入比 14.5%</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">每月净结余 (可投子弹)</div>
+          <div class="kpi-value" id="kpiSavings" style="color:var(--green);">¥45,300</div>
+          <div class="kpi-sub" id="kpiSaveRate" style="color:var(--green);">储蓄率 71.3%</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">应急备用金覆盖力</div>
+          <div class="kpi-value" id="kpiRunway">54.9 个月</div>
+          <div class="kpi-sub" id="kpiRunwayTag" style="color:var(--green);">远超6个月安全线</div>
+        </div>
+      </div>
+
+      <!-- 2. AI 实时深度诊断与动态配置模型 -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. AI 实时财务体检与化债周期配置模型</span>
+          <span id="regimeBadge" style="font-size:12px;color:var(--primary);font-weight:700;">动态匹配中</span>
+        </div>
+
+        <div id="strategyBanner" class="strategy-banner">
+          <div class="strategy-tag" id="strategyTag">策略模式</div>
+          <div class="strategy-title" id="strategyTitle">诊断标题</div>
+          <div class="strategy-desc" id="strategyDesc">诊断详细内容</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;">
+          <span>存量资金（<span id="dispTotalCash">¥1,000,000</span>）动态四盘分配方案：</span>
+          <span style="color:var(--muted);font-size:12px;">随风险偏好与现金流实时重算</span>
+        </div>
+        <div class="alloc-bar" id="allocBar"></div>
+        <div class="alloc-grid" id="allocGrid"></div>
+
+        <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px;" id="monthlyFlowAdvice">
+        </div>
+      </div>
+
+      <!-- 3. 立即行动方案建议与专属避坑指南 -->
+      <div class="card">
+        <div class="card-title">
+          <span>3. 立即行动方案建议与关键避坑指南</span>
+          <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 含实操防雷提示</span>
+        </div>
+        <div id="actionStepsContainer"></div>
+      </div>
+
+      <!-- 4. 长周期复利与资产成长模拟器 -->
+      <div class="card">
+        <div class="card-title">
+          <span>4. 资产配置长周期复利模拟曲线</span>
+          <span id="simEndTotal" style="font-size:14px;color:var(--primary);font-weight:800;">10年后预计总资产：¥0</span>
+        </div>
+        <div class="sim-controls">
+          <div>
+            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+              <span>每月定投追加 (元)</span>
+              <span id="simMonthlyLbl" style="color:var(--primary);">¥30,000</span>
+            </label>
+            <input type="range" id="simMonthly" min="0" max="100000" step="1000" value="30000" oninput="drawChart()">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+              <span>组合预期年化收益率</span>
+              <span id="simRateLbl" style="color:var(--primary);">4.2%</span>
+            </label>
+            <input type="range" id="simRate" min="1.5" max="10" step="0.1" value="4.2" oninput="drawChart()">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+              <span>规划持有年限</span>
+              <span id="simYearsLbl" style="color:var(--primary);">10 年</span>
+            </label>
+            <input type="range" id="simYears" min="3" max="30" step="1" value="10" oninput="drawChart()">
+          </div>
+        </div>
+        <canvas id="growthCanvas" width="760" height="240"></canvas>
+        <div style="display:flex;justify-content:center;gap:20px;font-size:12px;margin-top:8px;color:var(--muted);">
+          <span><i style="display:inline-block;width:12px;height:3px;background:#1a56db;vertical-align:middle;margin-right:4px;"></i>组合复利总资产</span>
+          <span><i style="display:inline-block;width:12px;height:3px;background:#9ca3af;vertical-align:middle;margin-right:4px;"></i>累计投入本金</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fmt = (n) => '¥' + Math.round(n).toLocaleString('zh-CN');
+
+  function syncSlider(inpId, rngId) {
+    document.getElementById(rngId).value = document.getElementById(inpId).value || 0;
+  }
+  function syncInput(rngId, inpId) {
+    document.getElementById(inpId).value = document.getElementById(rngId).value;
+  }
+
+  function applyPreset(type) {
+    const presets = {
+      standard: { cash: 1000000, debt: 320000, risk: 'balanced', my: 25000, sp: 8000, ex: 30500, loan: 9200, rent: 2500, car: 3000, misc: 3500 },
+      highDebt: { cash: 350000, debt: 1800000, risk: 'conservative', my: 22000, sp: 10000, ex: 3000, loan: 16500, rent: 0, car: 3500, misc: 4500 },
+      tight:    { cash: 60000, debt: 150000, risk: 'conservative', my: 12000, sp: 6000, ex: 0, loan: 4500, rent: 3800, car: 2500, misc: 5200 },
+      hnw:      { cash: 5000000, debt: 0, risk: 'growth', my: 45000, sp: 20000, ex: 35000, loan: 0, rent: 8000, car: 5000, misc: 8000 }
+    };
+    const p = presets[type];
+    document.getElementById('cashSavings').value = p.cash;
+    document.getElementById('totalDebt').value = p.debt;
+    document.getElementById('riskProfile').value = p.risk;
+    document.getElementById('myIncome').value = p.my;
+    document.getElementById('spouseIncome').value = p.sp;
+    document.getElementById('extraIncome').value = p.ex;
+    document.getElementById('loanPayment').value = p.loan;
+    document.getElementById('rentPayment').value = p.rent;
+    document.getElementById('carUtility').value = p.car;
+    document.getElementById('miscExpense').value = p.misc;
+    syncSlider('loanPayment','rngLoan');
+    syncSlider('rentPayment','rngRent');
+    syncSlider('carUtility','rngCar');
+    syncSlider('miscExpense','rngMisc');
+    runEngine(true);
+  }
+
+  function runEngine(animate = false) {
+    const cash = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
+    const debt = Math.max(0, parseFloat(document.getElementById('totalDebt').value) || 0);
+    const risk = document.getElementById('riskProfile').value;
+
+    const myInc = Math.max(0, parseFloat(document.getElementById('myIncome').value) || 0);
+    const spInc = Math.max(0, parseFloat(document.getElementById('spouseIncome').value) || 0);
+    const exInc = Math.max(0, parseFloat(document.getElementById('extraIncome').value) || 0);
+
+    const loan = Math.max(0, parseFloat(document.getElementById('loanPayment').value) || 0);
+    const rent = Math.max(0, parseFloat(document.getElementById('rentPayment').value) || 0);
+    const car  = Math.max(0, parseFloat(document.getElementById('carUtility').value) || 0);
+    const misc = Math.max(0, parseFloat(document.getElementById('miscExpense').value) || 0);
+
+    // 更新滑块数字标签
+    document.getElementById('lblLoan').innerText = fmt(loan);
+    document.getElementById('lblRent').innerText = fmt(rent);
+    document.getElementById('lblCar').innerText  = fmt(car);
+    document.getElementById('lblMisc').innerText = fmt(misc);
+
+    const totalIncome = myInc + spInc + exInc;
+    const stableIncome = myInc + spInc;
+    const totalExpense = loan + rent + car + misc;
+    const netSavings = totalIncome - totalExpense;
+    const saveRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
+    const debtToIncome = totalIncome > 0 ? (loan / totalIncome) * 100 : 0;
+    const stableRatio = totalIncome > 0 ? (stableIncome / totalIncome) * 100 : 0;
+    const runwayMonths = totalExpense > 0 ? (cash / totalExpense) : 999;
+
+    // 刷新顶部 KPI
+    document.getElementById('kpiIncome').innerText = fmt(totalIncome);
+    document.getElementById('kpiStableRatio').innerText = `稳定底薪占比 ${stableRatio.toFixed(0)}%` + (stableRatio < 55 ? '（副业依赖较高）' : '（底盘稳固）');
+    document.getElementById('kpiExpense').innerText = fmt(totalExpense);
+    document.getElementById('kpiDebtRatio').innerText = `偿债收入比 ${debtToIncome.toFixed(1)}%` + (debtToIncome > 40 ? '（偏高警戒）' : '（安全区间）');
+
+    const savEl = document.getElementById('kpiSavings');
+    savEl.innerText = fmt(netSavings);
+    savEl.style.color = netSavings >= 0 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('kpiSaveRate').innerText = `月度储蓄率 ${saveRate.toFixed(1)}%`;
+    document.getElementById('kpiSaveRate').style.color = saveRate >= 30 ? 'var(--green)' : (saveRate >= 10 ? 'var(--amber)' : 'var(--red)');
+
+    document.getElementById('kpiRunway').innerText = runwayMonths >= 120 ? '10年以上' : `${runwayMonths.toFixed(1)} 个月`;
+    const runTag = document.getElementById('kpiRunwayTag');
+    if (runwayMonths < 6) {
+      runTag.innerText = '⚠️ 不足6个月安全垫';
+      runTag.style.color = 'var(--red)';
+    } else if (runwayMonths < 12) {
+      runTag.innerText = '基本达标，建议继续加固';
+      runTag.style.color = 'var(--amber)';
+    } else {
+      runTag.innerText = '流动性充裕，抗风险极强';
+      runTag.style.color = 'var(--green)';
+    }
+
+    // 核心决策引擎：根据真实财务结构动态切换 5 种策略模式与资产比例
+    let regime = '';
+    let bannerClass = '';
+    let title = '';
+    let desc = '';
+    let weights = { cash: 25, bond: 35, equity: 30, gold: 10 };
+    let expectedRate = 4.2;
+
+    if (netSavings < 0 || runwayMonths < 4) {
+      regime = '模式一：现金流防线危机与流动性急救模式';
+      bannerClass = 'danger';
+      title = '核心诊断：流动性安全垫不足，严禁任何高风险投资！';
+      desc = `您当前的月度净结余为 <strong>${fmt(netSavings)}</strong>，现有存款仅能覆盖 <strong>${runwayMonths.toFixed(1)} 个月</strong> 的家庭刚性支出（低于6个月警戒线）。在宏观经济转型期，现金流安全高于一切。当前首要任务是暂停权益类与长锁定期投资，将全部存款保留在随取随用的货币基金或活期理财中，同时压缩非必要弹性开支（如餐饮杂项 ${fmt(misc)}）。`;
+      weights = { cash: 85, bond: 15, equity: 0, gold: 0 };
+      expectedRate = 2.0;
+    } else if (debtToIncome > 40 || (debt > cash * 1.5 && debt > 500000)) {
+      regime = '模式二：高负债压降与防御型资产配置模式';
+      bannerClass = 'warn';
+      title = '核心诊断：偿债负担较重，建议“防守优先 + 适度提前还贷”';
+      desc = `您的月供占总收入比例达 <strong>${debtToIncome.toFixed(1)}%</strong>（剩余负债 ${fmt(debt)}），在当前降息周期与收入波动预期下，高负债会显著削弱家庭抗风险能力。建议预留充足的 8-12 个月应急资金后，优先将部分低息存款用于提前偿还高利率贷款，剩余资金以中短债及国债锁定稳健收益，严格控制权益仓位。`;
+      weights = risk === 'growth' ? { cash: 40, bond: 40, equity: 15, gold: 5 } : { cash: 45, bond: 45, equity: 5, gold: 5 };
+      expectedRate = 3.1;
+    } else if (cash < 300000) {
+      regime = '模式三：早期财富积累与安全垫筑基模式';
+      bannerClass = 'warn';
+      title = '核心诊断：收支健康但存量蓄水池尚浅，重点在“增量定投”';
+      desc = `您的月度储蓄率达 <strong>${saveRate.toFixed(1)}%</strong>（每月结余 ${fmt(netSavings)}），造血能力良好，但当前存量资金（${fmt(cash)}）体量有限。建议先用存量资金筑牢 6-9 个月的应急防守盘与短债底仓，把每月的结余资金作为主力，通过宽基指数定投慢慢滚大雪球。`;
+      weights = risk === 'conservative' ? { cash: 55, bond: 35, equity: 5, gold: 5 } : { cash: 45, bond: 30, equity: 20, gold: 5 };
+      expectedRate = 3.8;
+    } else if (cash >= 3000000) {
+      regime = '模式四：高净值跨周期阶梯化债配置模式';
+      bannerClass = 'vip';
+      title = '核心诊断：高净值资产体量，核心矛盾是“对抗利率下行与资产荒”';
+      desc = `您拥有 <strong>${fmt(cash)}</strong> 的丰厚存量资金及每月 <strong>${fmt(netSavings)}</strong> 的强劲现金流。在国家化债与无风险利率长期下行的背景下，把大额资金放在普通银行定期会面临严重的再投资利率下滑与存款保险上限问题。建议构建“国债阶梯久期 + 高股息红利收租 + 宽基成长 + 黄金避险”的机构级资产组合。`;
+      if (risk === 'conservative') {
+        weights = { cash: 20, bond: 55, equity: 15, gold: 10 };
+        expectedRate = 3.6;
+      } else if (risk === 'balanced') {
+        weights = { cash: 15, bond: 40, equity: 35, gold: 10 };
+        expectedRate = 4.8;
+      } else {
+        weights = { cash: 10, bond: 30, equity: 48, gold: 12 };
+        expectedRate = 5.8;
+      }
+    } else {
+      regime = '模式五：标准哑铃型化债周期均衡配置模式';
+      bannerClass = 'good';
+      title = '核心诊断：现金流极其充沛，适合从“单一存款”向“攻守哑铃”转型';
+      desc = `您的家庭月度储蓄率高达 <strong>${saveRate.toFixed(1)}%</strong>（每月净结余 ${fmt(netSavings)}），且现有资金 <strong>${fmt(cash)}</strong> 安全垫极厚${debt > 0 ? `（剩余负债 ${fmt(debt)} 属于可控良性负债，无需急于提前还清）` : ''}。在利率中枢持续下移的化债周期里，建议告别单一短期定期，通过“长久期国债锁息 + 红利低波与宽基定投”分享国家产业升级与资产重组红利。`;
+      if (risk === 'conservative') {
+        weights = { cash: 30, bond: 50, equity: 12, gold: 8 };
+        expectedRate = 3.4;
+      } else if (risk === 'balanced') {
+        weights = { cash: 25, bond: 35, equity: 30, gold: 10 };
+        expectedRate = 4.4;
+      } else {
+        weights = { cash: 15, bond: 30, equity: 45, gold: 10 };
+        expectedRate = 5.4;
+      }
+    }
+
+    // 副业占比过高动态提醒
+    if (stableRatio < 55 && exInc > 0) {
+      desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性高于固定工资，因此防守现金垫已为您自动上调冗余保护。`;
+    }
+
+    document.getElementById('regimeBadge').innerText = regime;
+    const banner = document.getElementById('strategyBanner');
+    banner.className = 'strategy-banner ' + bannerClass;
+    document.getElementById('strategyTag').innerText = regime;
+    document.getElementById('strategyTitle').innerText = title;
+    document.getElementById('strategyDesc').innerHTML = desc;
+    document.getElementById('dispTotalCash').innerText = fmt(cash);
+
+    // 计算四盘具体金额
+    const amtCash   = cash * (weights.cash / 100);
+    const amtBond   = cash * (weights.bond / 100);
+    const amtEquity = cash * (weights.equity / 100);
+    const amtGold   = cash * (weights.gold / 100);
+
+    const segments = [
+      { name: '防守与应急现金盘', pct: weights.cash, amt: amtCash, color: '#10b981', note: '货币基金 / T+0现金理财 / 短债基金，覆盖突发支出' },
+      { name: '中长端固收锁息盘', pct: weights.bond, amt: amtBond, color: '#1a56db', note: '记账式国债 / 储蓄国债 / 政金债基，锁定降息周期收益' },
+      { name: '权益红利与成长盘', pct: weights.equity, amt: amtEquity, color: '#8b5cf6', note: weights.equity === 0 ? '当前模式建议暂缓配置，优先稳固现金流' : '红利低波ETF（收息）+ 沪深300/科技制造宽基（分批定投）' },
+      { name: '另类避险压舱石', pct: weights.gold, amt: amtGold, color: '#f59e0b', note: weights.gold === 0 ? '当前资金优先保障流动性，暂不配置' : '实物金条或场内黄金ETF，对冲地缘与宏观不确定性' }
+    ];
+
+    document.getElementById('allocBar').innerHTML = segments.map(s =>
+      `<div class="alloc-seg" style="width:${s.pct}%;background:${s.color};" title="${s.name}: ${s.pct}%"></div>`
+    ).join('');
+
+    document.getElementById('allocGrid').innerHTML = segments.map(s => `
+      <div class="alloc-item">
+        <div class="alloc-head">
+          <span class="alloc-name"><i class="dot" style="background:${s.color};"></i>${s.name}</span>
+          <span class="alloc-pct">${s.pct}%</span>
+        </div>
+        <div class="alloc-amt">${fmt(s.amt)}</div>
+        <div class="alloc-note">${s.note}</div>
+      </div>
+    `).join('');
+
+    // 每月新增结余动态分配建议
+    const flowEl = document.getElementById('monthlyFlowAdvice');
+    if (netSavings <= 0) {
+      flowEl.innerHTML = `<strong>📅 每月新增结余分配：</strong>当前月度结余为 <strong>${fmt(netSavings)}</strong>，请立即梳理账单，削减弹性支出，确保每月至少留出 20% 以上的正现金流。`;
+    } else {
+      const mCash = netSavings * (weights.cash / 100);
+      const mBond = netSavings * (weights.bond / 100);
+      const mEq   = netSavings * ((weights.equity + weights.gold) / 100);
+      flowEl.innerHTML = `<strong>📅 每月新增结余（${fmt(netSavings)}/月）自动分流指令：</strong><br>
+      ① <strong>${fmt(mCash)}/月</strong> 补充进活期/短债防守池；② <strong>${fmt(mBond)}/月</strong> 定投中长期利率债/固收底仓；③ <strong>${fmt(mEq)}/月</strong> 用于定投红利低波ETF、宽基指数及黄金ETF。`;
+    }
+
+    // 3. 动态生成立即行动方案与专属避坑指南
+    const bankSplitTip = amtCash > 500000
+      ? `您防守盘金额高达 ${fmt(amtCash)}，已超过单家银行 50 万元存款保险赔付上限！务必拆分为 2-3 家国有大行或头部股份制银行存放。`
+      : `即便都是货币基金或现金理财，也建议分散在 2 个不同合规银行或平台，避免单一渠道出现临时限额赎回。`;
+
+    const bondPitfall = weights.bond >= 30
+      ? `银行APP里开放随时买卖的是<strong>“记账式国债”</strong>，持有到期保本保息，但<strong>中途提前卖出可能因市场利率波动产生微小市价差价盈亏</strong>；且切勿轻信任何宣传“保本高息（年化超4%）”的非国债理财。`
+      : `当前您的固收比例较低，重点选择流动性好的短债基金或3年期储蓄国债，避免买入封闭期过长的银行理财导致急用钱时无法变现。`;
+
+    const equityStep = weights.equity === 0
+      ? `<div class="step-action"><strong>具体行动：</strong>根据您当前的负债与现金流安全垫测算，<strong>本月及本季度暂不建议投入任何股票或偏股型基金（配置比例 0%）</strong>，将全部精力放在扩充现金安全垫与压降负债上。</div>
+         <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>切忌在家庭现金流吃紧或高负债期试图通过“炒股、买热门基金”来快速翻本，一旦遭遇市场短期回调，极易被迫在底部割肉来还房租或月供。</div>`
+      : `<div class="step-action"><strong>具体行动：</strong>拿出存量资金中的 <strong>${fmt(amtEquity)}</strong>（切勿一次性买入！），拆分为 12-18 份，每月定期定额买入<strong>红利低波ETF</strong>与<strong>沪深300/中证500宽基指数</strong>。</div>
+         <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong><strong>绝对禁止“一把梭”满仓！</strong>哪怕是高股息红利资产也会有阶段性回撤；同时远离短期暴涨的题材概念股，只做指数化定投才能稳稳吃到资产重估红利。</div>`;
+
+    document.getElementById('actionStepsContainer').innerHTML = `
+      <div class="step-card">
+        <div class="step-header"><span class="step-num">第 1 步 · 1天内执行</span><span class="step-title">划转并锁定“防守现金垫”：${fmt(amtCash)}</span></div>
+        <div class="step-action">从现有存款中划出 <strong>${fmt(amtCash)}</strong>（约覆盖 ${totalExpense > 0 ? (amtCash/totalExpense).toFixed(1) : '12'} 个月家庭刚性开销），存入 T+0 货币基金或银行现金管理类产品中。</div>
+        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>${bankSplitTip}</div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header"><span class="step-num">第 2 步 · 1周内完成</span><span class="step-title">建立中长端固收锁息底仓：${fmt(amtBond)}</span></div>
+        <div class="step-action">利用 <strong>${fmt(amtBond)}</strong>，通过常用商业银行APP国债专区购买 3-5 年期国债，或在券商/同花顺账户分批配置场内国债ETF与政金债指数基金。</div>
+        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>${bondPitfall}</div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header"><span class="step-num">第 3 步 · 1个月内起步</span><span class="step-title">权益与红利资产分批建仓：${fmt(amtEquity)}</span></div>
+        ${equityStep}
+      </div>
+
+      <div class="step-card">
+        <div class="step-header"><span class="step-num">第 4 步 · 本季度内完善</span><span class="step-title">配置黄金避险压舱石：${fmt(amtGold)}</span></div>
+        <div class="step-action">${weights.gold > 0 ? `动用 <strong>${fmt(amtGold)}</strong> 购入银行积存金、实物投资金条或场内黄金ETF，作为对抗宏观不确定性的终极价值锚。` : `当前策略模式下黄金配置为 <strong>¥0</strong>，待现金安全垫突破 12 个月开支后再行启动。`}</div>
+        <div class="pitfall-box"><strong>⚠️ 关键避坑提醒：</strong>黄金在组合中仅承担“保险丝”角色（上限控制在 10%-12%），<strong>严禁碰带杠杆的纸黄金、贵金属期货或非正规炒金平台</strong>。</div>
+      </div>
+    `;
+
+    // 联动更新底部复利模拟器的默认参数
+    const simMonthlyInput = document.getElementById('simMonthly');
+    const suggestedMonthly = Math.max(0, Math.round(netSavings * 0.75 / 1000) * 1000);
+    simMonthlyInput.max = Math.max(100000, suggestedMonthly * 2);
+    simMonthlyInput.value = suggestedMonthly;
+    document.getElementById('simRate').value = expectedRate.toFixed(1);
+
+    drawChart();
+
+    if (animate) {
+      const panel = document.getElementById('outputPanel');
+      panel.classList.remove('flash');
+      void panel.offsetWidth;
+      panel.classList.add('flash');
+    }
+  }
+
+  function drawChart() {
+    const startCash = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
+    const monthlyAdd = parseFloat(document.getElementById('simMonthly').value) || 0;
+    const annualRate = parseFloat(document.getElementById('simRate').value) || 0;
+    const years = parseInt(document.getElementById('simYears').value) || 10;
+
+    document.getElementById('simMonthlyLbl').innerText = fmt(monthlyAdd);
+    document.getElementById('simRateLbl').innerText = annualRate.toFixed(1) + '%';
+    document.getElementById('simYearsLbl').innerText = years + ' 年';
+
+    const monthlyRate = (annualRate / 100) / 12;
+    const totals = [startCash];
+    const principals = [startCash];
+
+    let curTotal = startCash;
+    let curPrincipal = startCash;
+
+    for (let y = 1; y <= years; y++) {
+      for (let m = 0; m < 12; m++) {
+        curTotal = (curTotal + monthlyAdd) * (1 + monthlyRate);
+        curPrincipal += monthlyAdd;
+      }
+      totals.push(curTotal);
+      principals.push(curPrincipal);
+    }
+
+    document.getElementById('simEndTotal').innerText = `${years}年后预计总资产：${fmt(curTotal)}`;
+
+    const canvas = document.getElementById('growthCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 68, padR = 24, padT = 20, padB = 30;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const maxVal = Math.max(...totals, 10000) * 1.08;
+
+    // 网格线与Y轴刻度
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (plotH / 4) * i;
+      const val = maxVal * (1 - i / 4);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(W - padR, y);
+      ctx.stroke();
+      ctx.fillText((val / 10000).toFixed(0) + '万', padL - 8, y + 4);
+    }
+
+    // X轴标签
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= years; i++) {
+      if (years > 15 && i % 2 !== 0 && i !== years) continue;
+      const x = padL + (plotW / years) * i;
+      ctx.fillText(i + '年', x, H - 8);
+    }
+
+    // 绘制累计本金虚线
+    ctx.beginPath();
+    ctx.strokeStyle = '#9ca3af';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    principals.forEach((v, i) => {
+      const x = padL + (plotW / years) * i;
+      const y = padT + plotH * (1 - v / maxVal);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 绘制复利总资产曲线与填充
+    ctx.beginPath();
+    totals.forEach((v, i) => {
+      const x = padL + (plotW / years) * i;
+      const y = padT + plotH * (1 - v / maxVal);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#1a56db';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // 面积渐变
+    ctx.lineTo(padL + plotW, padT + plotH);
+    ctx.lineTo(padL, padT + plotH);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+    grad.addColorStop(0, 'rgba(26, 86, 219, 0.22)');
+    grad.addColorStop(1, 'rgba(26, 86, 219, 0.01)');
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
+  // 页面加载自动初始化运算
+  window.addEventListener('DOMContentLoaded', () => runEngine(false));
+</script>
+</body>
+</html>
