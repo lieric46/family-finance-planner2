@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -339,15 +340,15 @@
   .step-card {
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 12px;
+    padding: 15px;
+    margin-bottom: 13px;
     background: #fff;
   }
   .step-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     flex-wrap: wrap;
   }
   .step-num {
@@ -359,7 +360,36 @@
     border-radius: 6px;
   }
   .step-title { font-size: 14.5px; font-weight: 700; }
-  .step-action { font-size: 13.5px; color: #374151; margin-bottom: 8px; line-height: 1.65; }
+  .step-action { font-size: 13.5px; color: #374151; margin-bottom: 9px; line-height: 1.65; }
+  .plan-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.8px;
+    color: #1e3a8a;
+    margin-bottom: 9px;
+    line-height: 1.65;
+  }
+  .plan-box strong { color: #1d4ed8; }
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 7px;
+  }
+  @media (max-width: 640px) { .plan-grid { grid-template-columns: 1fr; } }
+  .plan-pill {
+    background: #fff;
+    border: 1px solid #dbeafe;
+    border-radius: 6px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  .plan-pill span { display: block; color: var(--muted); font-size: 11px; }
+  .plan-pill b { color: var(--primary); font-size: 13.5px; }
+
   .pitfall-box {
     background: #fffbeb;
     border: 1px solid #fde68a;
@@ -538,7 +568,7 @@
 <div class="container">
   <header>
     <h1>家庭财务体检与资产配置规划器</h1>
-    <p>把家里的存款、投资、房子车子和欠款理清楚，用大白话帮您算明白：手头该留多少应急钱、3~5年安稳钱怎么放、5年以上长线钱怎么配，以及未来多年攒钱的美好蓝图</p>
+    <p>把家里的存款、投资、房子车子和欠款理清楚，用大白话帮您算明白：手头该留多少应急钱、3~5年安稳钱怎么放、5年以上长线钱怎么配，以及具体每月定期投多少</p>
     <div class="badge-row">
       <span class="privacy-badge">🔒 所有数据仅在您手机/电脑本地计算，绝不上传服务器</span>
       <span class="privacy-badge">ℹ️ 仅供家庭理财科普与数字测算参考，不构成投资建议</span>
@@ -663,7 +693,7 @@
       </div>
     </div>
 
-    <!-- 右侧动态输出区（整块可导出为高清图片或 PDF） -->
+    <!-- 右侧动态输出区 -->
     <div id="outputPanel">
       <!-- 顶部一键导出栏 -->
       <div class="export-bar no-print">
@@ -753,11 +783,11 @@
           </div>
         </div>
 
-        <!-- 3. 规划落地参考步骤与常见风险提示 -->
+        <!-- 3. 规划落地参考步骤与具体定期配置方案 -->
         <div class="card">
           <div class="card-title">
-            <span>3. 手把手调整参考步骤（附带避坑提醒）</span>
-            <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 投资有风险，拿不准别乱动</span>
+            <span>3. 手把手调整与每月定期配置参考方案（附避坑提醒）</span>
+            <span style="font-size:12px;color:var(--amber);font-weight:700;">⚠️ 以下分批节奏仅作测算参考</span>
           </div>
           <div id="actionStepsContainer"></div>
         </div>
@@ -853,11 +883,11 @@
           </div>
         </div>
 
-        <!-- 底部合规免责声明（随长图和 PDF 一起保存，确保分享出去永远带着合规提示） -->
+        <!-- 底部合规免责声明 -->
         <div class="disclaimer-footer">
           <strong>重要提示与免责声明：</strong><br>
           1. 本工具只是帮您梳理家里账本和学习基础理财常识的计算器，<strong>不推荐任何具体的股票、基金、保险、银行理财或黄金产品</strong>，也不代表任何银行或证券机构的官方意见。<br>
-          2. 页面里算出来的分配比例、假设年收益率、理想收益明细和曲线图，都是按通用理财公式做的<strong>纯数学推演，不保证未来一定能赚到这么多钱，更不是“保本保息”承诺</strong>。<br>
+          2. 页面里算出来的分配比例、分批定投金额、假设年收益率、理想收益明细和曲线图，都是按通用理财公式做的<strong>纯数学推演，不保证未来一定能赚到这么多钱，更不是“保本保息”承诺</strong>。<br>
           3. 买基金、股票、黄金甚至买卖房子都有涨有跌，可能会亏本。您真要动钱做投资或提前还房贷之前，一定要看清官方的产品说明书和风险提示，拿不准的地方建议去正规银行或持牌机构找专业人员当面咨询。
         </div>
       </div>
@@ -880,7 +910,6 @@
 <script>
   const fmt = (n) => '¥' + Math.round(n).toLocaleString('zh-CN');
 
-  // 全局缓存当前四笔钱权重，供第四部分分项收益明细联动使用
   let currentWeights = { cash: 25, bond: 35, equity: 30, gold: 10 };
 
   function syncSlider(inpId, rngId) {
@@ -980,7 +1009,7 @@
       document.getElementById('monthlyFlowAdvice').innerHTML = `<strong>📅 每个月新攒下来的钱怎么分：</strong>填好收支后，这里会帮您算好每月结余该往哪个口袋里放。`;
       document.getElementById('actionStepsContainer').innerHTML = `
         <div style="padding:18px;text-align:center;color:var(--muted);font-size:13.5px;background:#f9fafb;border-radius:10px;border:1px dashed var(--border);">
-          填好左边的数据后，系统会结合您现有的<strong>存款、理财、股票和黄金</strong>，在这里生成大白话调整步骤和避坑提醒。
+          填好左边的数据后，系统会结合您现有的<strong>存款、理财、股票和黄金</strong>，在这里生成<strong>具体的分批定投金额（每月投多少、分几个月投）</strong>和避坑提醒。
         </div>
       `;
 
@@ -1293,78 +1322,200 @@
       </div>
     `).join('');
 
+    const mCash = netSavings > 0 ? netSavings * (weights.cash / 100) : 0;
+    const mBond = netSavings > 0 ? netSavings * (weights.bond / 100) : 0;
+    const mEqOnly = netSavings > 0 ? netSavings * (weights.equity / 100) : 0;
+    const mGoldOnly = netSavings > 0 ? netSavings * (weights.gold / 100) : 0;
+
     const flowEl = document.getElementById('monthlyFlowAdvice');
     if (netSavings <= 0) {
       flowEl.innerHTML = `<strong>📅 每个月新攒下来的钱怎么分：</strong>您家目前每月结余为 <strong>${fmt(netSavings)}</strong>，暂时攒不下钱，建议先记两个月账单、砍掉不必要的花销，等每月能存下钱了再按比例分配。`;
     } else {
-      const mCash = netSavings * (weights.cash / 100);
-      const mBond = netSavings * (weights.bond / 100);
-      const mEq   = netSavings * ((weights.equity + weights.gold) / 100);
-      flowEl.innerHTML = `<strong>📅 每个月新攒下来的 ${fmt(netSavings)} 怎么分（参考比例）：</strong><br>
-      ① 拿 <strong>${fmt(mCash)}/月</strong> 存进“1年内随时要用的应急活钱”；② 拿 <strong>${fmt(mBond)}/月</strong> 放进“3~5年不用的安稳底仓”；③ 拿 <strong>${fmt(mEq)}/月</strong> 分批投入“5年以上长线增值和黄金压箱底”（以上仅作数学测算参考）。`;
+      flowEl.innerHTML = `<strong>📅 每个月新攒下来的 ${fmt(netSavings)} 自动分流参考：</strong><br>
+      ① <strong>${fmt(mCash)}/月</strong> 存进“1年内应急活钱”；② <strong>${fmt(mBond)}/月</strong> 放进“3~5年安稳底仓”；③ <strong>${fmt(mEqOnly)}/月</strong> 定期定投“5年以上长线增值”；④ <strong>${fmt(mGoldOnly)}/月</strong> 定投“避险压箱底黄金”（以上仅作数学测算参考）。`;
     }
 
-    // 3. 大白话操作参考步骤与避坑提醒
+    // 3. 大白话操作参考步骤 + 具体的分批/每月定期配置方案卡片
+    // 步骤1：应急活钱具体执行方案
+    let cashPlanHTML = '';
+    if (diffCash > 1000) {
+      const mAlloc = mCash > 500 ? mCash : Math.max(1000, netSavings * 0.5);
+      const needMonths = mAlloc > 0 ? Math.ceil(diffCash / mAlloc) : 12;
+      cashPlanHTML = `
+        <div class="plan-box">
+          <strong>📋 具体补充执行方案（先把应急口袋填满）：</strong><br>
+          您目前应急活钱还差约 <strong>${fmt(diffCash)}</strong>。建议发工资当天设置一张银行卡自动转存，不要等月底剩多少再存：
+          <div class="plan-grid">
+            <div class="plan-pill"><span>每月固定转存金额</span><b>${fmt(mAlloc)} / 月</b></div>
+            <div class="plan-pill"><span>预计攒满所需时间</span><b>约 ${needMonths} 个月</b></div>
+            <div class="plan-pill"><span>存放方式建议</span><b>随取随用零钱理财</b></div>
+          </div>
+        </div>
+      `;
+    } else if (diffCash < -1000) {
+      const excessCash = Math.abs(diffCash);
+      cashPlanHTML = `
+        <div class="plan-box">
+          <strong>📋 具体腾挪执行方案（把多出来的低息活钱分流出去）：</strong><br>
+          您手头的现金存款比日常应急需要多出了约 <strong>${fmt(excessCash)}</strong>（这笔钱就是下面第 2、3、4 步分批配置的“弹药库”）。建议先把这 <strong>${fmt(excessCash)}</strong> 单独转进一张专门的“待投资中转卡”里，避免平时买菜购物顺手花掉，然后按下面算好的每月金额分批转出。
+        </div>
+      `;
+    } else {
+      cashPlanHTML = `
+        <div class="plan-box">
+          <strong>📋 具体执行方案：</strong>您现有的 <strong>${fmt(cash)}</strong> 应急活钱刚刚达标！平时不动它，以后每月新攒下的钱只需拿 <strong>${fmt(mCash)}/月</strong> 跟着生活开销涨跌微调补充即可。
+        </div>
+      `;
+    }
+
     const bankSplitTip = targetCash > 500000
       ? `您这笔随时要用的应急钱有 ${fmt(targetCash)}，超过了国家《存款保险条例》规定的“单家银行最多赔付50万”的上限。最稳妥的办法是<strong>分开存在 2~3 家不同的正规银行</strong>，每家别超过50万。`
       : `哪怕是存零钱理财或货币基金，也建议<strong>分放在 2 个不同的大平台或银行</strong>，避免万一某个平台临时限制大额快速提现时耽误急用。`;
 
-    const bondActionText = bond > 0
-      ? `您手里目前已经有 <strong>${fmt(bond)}</strong> 稳健理财/债券，对照测算目标 <strong>${fmt(targetBond)}</strong>，${diffBond > 1000 ? `还可以分批再往里补充约 <strong>${fmt(diffBond)}</strong>` : (diffBond < -1000 ? `这部分稳健底仓已经很厚实了，多出来的约 <strong>${fmt(Math.abs(diffBond))}</strong> 可以慢慢匀一点给长线增值或黄金仓` : `目前的金额刚刚好，安安心心拿着就行`)}。`
-      : `您目前还没买过国债或稳健债券类产品，按测算可以留出约 <strong>${fmt(targetBond)}</strong> 作为“3~5年不用的安稳底仓”，去正规银行或证券软件里了解储蓄国债、纯债基金或中低风险固收理财。`;
+    // 步骤2：安稳底仓（3~5年闲钱）具体执行方案
+    let bondPlanHTML = '';
+    if (weights.bond === 0) {
+      bondPlanHTML = `<div class="step-action">当前测算模型下暂不单独配置此类资产。</div>`;
+    } else if (diffBond > 1000) {
+      // 有存量缺口：建议分 6 个月分批买入（存量腾挪 + 每月新增接力）
+      const stockBatch6m = diffBond / 6;
+      const totalMonthlyBond = stockBatch6m + mBond;
+      bondPlanHTML = `
+        <div class="step-action">您目前已有 <strong>${fmt(bond)}</strong> 稳健理财/债券，距离测算目标 <strong>${fmt(targetBond)}</strong> 还差约 <strong>${fmt(diffBond)}</strong>。固收类资产波动小，不用拖太久，建议<strong>分 6 个月（半年）逐步建仓到位</strong>：</div>
+        <div class="plan-box">
+          <strong>📋 具体分批配置参考方案（半年期阶梯建仓法）：</strong><br>
+          把存量缺口 <strong>${fmt(diffBond)}</strong> 拆成 <strong>6 份</strong>，每月固定1号或发薪日买入 1 份，防止买在短期利率低点；等 6 个月存量配齐后，以后每月只需用新攒下的工资定投 <strong>${fmt(mBond)}/月</strong> 即可：
+          <div class="plan-grid">
+            <div class="plan-pill"><span>存量分批买入（前6个月）</span><b>${fmt(stockBatch6m)} / 月</b></div>
+            <div class="plan-pill"><span>加上每月新结余定投</span><b>合计 ${fmt(totalMonthlyBond)} / 月</b></div>
+            <div class="plan-pill"><span>6个月后日常定投节奏</span><b>${fmt(mBond)} / 月</b></div>
+          </div>
+        </div>
+      `;
+    } else if (diffBond < -1000) {
+      bondPlanHTML = `
+        <div class="step-action">您手里已经有 <strong>${fmt(bond)}</strong> 稳健理财/债券，比测算目标 <strong>${fmt(targetBond)}</strong> 多出了约 <strong>${fmt(Math.abs(diffBond))}</strong>。</div>
+        <div class="plan-box">
+          <strong>📋 具体调整方案：</strong>不用急着提前赎回（避免产生手续费），等手头的定期理财或债券到期后，拿 <strong>${fmt(Math.abs(diffBond))}</strong> 出来，分批补充到下面偏少的长线增值或黄金仓位里；以后每月新结余按 <strong>${fmt(mBond)}/月</strong> 正常补充即可。
+        </div>
+      `;
+    } else {
+      bondPlanHTML = `
+        <div class="step-action">您现有的 <strong>${fmt(bond)}</strong> 稳健底仓非常扎实，与目标基本一致。</div>
+        <div class="plan-box">
+          <strong>📋 后续定期配置方案：</strong>存量不用大动，以后每个月发工资后，定期定额往里追加 <strong>${fmt(mBond)}/月</strong>，让安稳底仓跟着家庭收入一起慢慢长大。
+        </div>
+      `;
+    }
 
     const bondPitfall = weights.bond >= 30
       ? `买国债和理财有两个大坑要避开：第一，<strong>“记账式国债”虽然每天都能买卖，但价格天天变，没到期提前卖可能会亏本金</strong>，想锁死利息就选“储蓄国债”；第二，现在国家规定所有理财都不准保本，<strong>凡是有人跟您吹嘘“绝对保本、年息8%以上”的，十有八九是骗局或高风险非标产品，千万别信！</strong>`
       : `现阶段家里活钱不算特别多，如果买银行理财，<strong>千万别买那种“封闭期两三年、中间一分钱取不出来”的产品</strong>，尽量挑存期短、急用钱时能灵活赎回的品种。`;
 
+    // 步骤3：长线增值（5年以上闲钱）具体定期定投方案
     let equityActionHTML = '';
     if (weights.equity === 0) {
       equityActionHTML = `
-        <div class="step-action"><strong>参考做法：</strong>按您家现在的欠款压力和应急钱情况，<strong>现阶段这笔钱的参考金额是 ¥0</strong>。${equity > 0 ? `您手里目前还拿着 <strong>${fmt(equity)}</strong> 股票或偏股基金，建议趁市场行情不错的时候分批卖掉一部分，换成银行存款先把家里应急钱补足。` : `现阶段管住手，别听别人推荐去买股票或高风险基金。`}</div>
+        <div class="step-action">按您家现在的欠款压力和应急钱情况，<strong>现阶段这笔钱的参考金额是 ¥0</strong>。${equity > 0 ? `您手里目前还拿着 <strong>${fmt(equity)}</strong> 股票或偏股基金，建议趁市场反弹时分 3~6 次逐步卖出，换成银行存款先把家里应急钱补足。` : `现阶段管住手，别听别人推荐去买股票或高风险基金。`}</div>
         <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>手头紧或者欠债多的时候，<strong>最忌讳抱着“借钱炒股、一把翻身”的赌徒心态</strong>！股市短期跌个20%~30%太常见了，万一家里急用钱被迫在最低点割肉，会直接拖垮家庭财务。</div>
       `;
-    } else {
-      const eqDiffDesc = equity > 0
-        ? `您手里目前已经有 <strong>${fmt(equity)}</strong> 股票或偏股基金，对照测算目标 <strong>${fmt(targetEquity)}</strong>，${diffEquity > 1000 ? `还有约 <strong>${fmt(diffEquity)}</strong> 的空间，建议分成 12~18 个月，每月发工资后固定买一点（定投），慢慢补齐` : (diffEquity < -1000 ? `您现在的股票/基金仓位比测算线高出了约 <strong>${fmt(Math.abs(diffEquity))}</strong>，如果已经赚了不少，可以考虑分批落袋为安一部分，转成安稳底仓` : `您现在的持仓比例跟您的承受力非常匹配`)}。`
-        : `这笔钱测算金额约 <strong>${fmt(targetEquity)}</strong>，记住必须是<strong>未来 5 年以上绝对不会动用的闲钱</strong>。不建议一次性全买进去，最好分成 12~18 份，每月固定投一点大盘指数基金或高分红资产，跌了当攒便宜筹码，涨了慢慢享受复利。`;
+    } else if (diffEquity > 1000) {
+      // 有缺口：强烈建议拆成 12 个月（或大额拆 18 个月）定投，并算出每周/每月定投额
+      const monthsSplit = diffEquity >= 300000 ? 18 : 12;
+      const stockDcaMonthly = diffEquity / monthsSplit;
+      const totalDcaMonthly = stockDcaMonthly + mEqOnly;
+      const totalDcaWeekly = totalDcaMonthly / 4.33;
       equityActionHTML = `
-        <div class="step-action"><strong>参考做法：</strong>${eqDiffDesc}</div>
-        <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong><strong>千万别一把全仓冲进去（“一把梭”）！</strong>买股票和偏股基金没有任何人保本，短期亏个10%~20%非常正常，如果拿明年要买房、交学费的钱去买，心态肯定会崩；也别天天盯着大盘追涨杀跌。</div>
+        <div class="step-action">您目前持有 <strong>${fmt(equity)}</strong> 股票/偏股基金，距离测算目标 <strong>${fmt(targetEquity)}</strong> 还有约 <strong>${fmt(diffEquity)}</strong> 的增配空间。权益市场波动大，最科学的方法是<strong>“存量分批定投 + 每月工资定投”双轮驱动</strong>：</div>
+        <div class="plan-box">
+          <strong>📋 具体定期定投（DCA）执行参考方案（建议分 ${monthsSplit} 个月建仓）：</strong><br>
+          把存量缺口 <strong>${fmt(diffEquity)}</strong> 拆成 <strong>${monthsSplit} 份</strong>（用 ${monthsSplit === 18 ? '1年半' : '1年'} 时间慢慢买完），加上每月新攒工资里的 <strong>${fmt(mEqOnly)}/月</strong>，开通证券或基金软件里的<strong>“自动定投”</strong>功能（选按月定投或每周四定投都可以，跌了自动多买份额、涨了少买份额）：
+          <div class="plan-grid">
+            <div class="plan-pill"><span>存量分批定投（前${monthsSplit}个月）</span><b>${fmt(stockDcaMonthly)} / 月</b></div>
+            <div class="plan-pill"><span>加上每月工资定投（前${monthsSplit}个月合计）</span><b>${fmt(totalDcaMonthly)} / 月（约 ${fmt(totalDcaWeekly)}/周）</b></div>
+            <div class="plan-pill"><span>${monthsSplit}个月建仓完成后长期定投</span><b>${fmt(mEqOnly)} / 月</b></div>
+          </div>
+        </div>
+        <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong><strong>千万别一把全仓冲进去（“一把梭”）！</strong>买股票和偏股基金没有任何人保本，短期亏个10%~20%非常正常，如果拿明年要买房、交学费的钱去买，心态肯定会崩；定投期间遇到大跌千万别慌着停掉，坚持扣款才能摊低成本。</div>
+      `;
+    } else if (diffEquity < -1000) {
+      const overEq = Math.abs(diffEquity);
+      equityActionHTML = `
+        <div class="step-action">您目前持有的股票/偏股基金（<strong>${fmt(equity)}</strong>）比测算均衡线（<strong>${fmt(targetEquity)}</strong>）高出了约 <strong>${fmt(overEq)}</strong>，风险敞口略大。</div>
+        <div class="plan-box">
+          <strong>📋 具体止盈平衡方案：</strong>建议分 <strong>3~6 个月</strong> 逐步减持超出部分的 <strong>${fmt(overEq)}</strong>（每月落袋为安约 <strong>${fmt(overEq / 4)}</strong>），把赚到的钱转入“3~5年安稳底仓”或“黄金避险仓”锁住胜利果实；后续每月新结余按 <strong>${fmt(mEqOnly)}/月</strong> 正常定投即可。
+        </div>
+        <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>见好就收、动态再平衡才是长期赚钱的关键，不要因为近期行情好就把全家的保命钱都加仓到高波动股票里。</div>
+      `;
+    } else {
+      equityActionHTML = `
+        <div class="step-action">您现有的 <strong>${fmt(equity)}</strong> 长线仓位比例与您的心理承受力非常契合。</div>
+        <div class="plan-box">
+          <strong>📋 后续长期定投方案：</strong>现有持仓拿稳不动，以后每个月发工资后，坚持自动定投 <strong>${fmt(mEqOnly)}/月</strong>（或折合每周定投 <strong>${fmt(mEqOnly / 4.33)}/周</strong>），用时间换取复利。
+        </div>
+        <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>切忌频繁买卖追涨杀跌，真正能赚到大钱的定投，靠的是“拿得住 5 年以上”。</div>
       `;
     }
 
-    let goldActionText = '';
+    // 步骤4：避险压箱底黄金具体定期配置方案
+    let goldActionHTML = '';
     if (weights.gold === 0) {
-      goldActionText = gold > 0
-        ? `按眼下的情况，这笔钱参考金额是 <strong>¥0</strong>，您手里目前有 <strong>${fmt(gold)}</strong> 黄金，如果近期手头紧，金价合适时可以变现一部分补充家庭应急钱。`
-        : `眼下先把应急活钱攒够了，这笔压箱底的钱暂时先不配（¥0）。`;
+      goldActionHTML = `
+        <div class="step-action">${gold > 0 ? `按眼下的情况，这笔钱参考金额是 <strong>¥0</strong>，您手里目前有 <strong>${fmt(gold)}</strong> 黄金，如果近期手头紧，金价合适时可以变现一部分补充家庭应急钱。` : `眼下先把应急活钱攒够了，这笔压箱底的钱暂时先不配（¥0）。`}</div>
+      `;
+    } else if (diffGold > 1000) {
+      const goldBatch12m = diffGold / 12;
+      const totalGoldMonthly = goldBatch12m + mGoldOnly;
+      goldActionHTML = `
+        <div class="step-action">您目前持有 <strong>${fmt(gold)}</strong> 黄金资产，距离测算目标 <strong>${fmt(targetGold)}</strong> 还有约 <strong>${fmt(diffGold)}</strong> 空间。黄金价格受国际局势影响波动不小，同样建议<strong>分 12 个月（1年）定期定投</strong>，不猜金价高低：</div>
+        <div class="plan-box">
+          <strong>📋 具体定期买金参考方案（银行积存金 / 黄金基金定投）：</strong><br>
+          开通正规银行 App 的“积存金自动定投”或证券账户的黄金基金定投，前 12 个月把存量缺口分批买入，1 年后转为每月小额长线定投：
+          <div class="plan-grid">
+            <div class="plan-pill"><span>存量分批定投（前12个月）</span><b>${fmt(goldBatch12m)} / 月</b></div>
+            <div class="plan-pill"><span>加上每月工资定投（前12个月合计）</span><b>${fmt(totalGoldMonthly)} / 月</b></div>
+            <div class="plan-pill"><span>1年配齐后长期定投</span><b>${fmt(mGoldOnly)} / 月</b></div>
+          </div>
+        </div>
+      `;
+    } else if (diffGold < -1000) {
+      goldActionHTML = `
+        <div class="step-action">您手里目前已经有 <strong>${fmt(gold)}</strong> 黄金资产，比测算线高出约 <strong>${fmt(Math.abs(diffGold))}</strong>。</div>
+        <div class="plan-box">
+          <strong>📋 具体执行方案：</strong>黄金本身不会像债券那样每年派利息，家里配 10% 左右当压箱底就够了，<strong>现阶段暂停继续加仓黄金</strong>，等以后总家底变大了比例自然会回到合理区间。
+        </div>
+      `;
     } else {
-      goldActionText = gold > 0
-        ? `您手里目前已经有 <strong>${fmt(gold)}</strong> 黄金资产，对照测算目标 <strong>${fmt(targetGold)}</strong>，${diffGold > 1000 ? `还可以分批补充约 <strong>${fmt(diffGold)}</strong>，通过银行积存金或场内黄金基金慢慢攒` : (diffGold < -1000 ? `您家黄金占比已经比测算线高出约 <strong>${fmt(Math.abs(diffGold))}</strong> 了，黄金本身不生利息，配太多反而拉低整体收益，不用再追高买了` : `您家黄金持仓比例刚刚好，当成传家压箱底拿着就行`)}。`
-        : `您目前还没配置黄金，测算金额约 <strong>${fmt(targetGold)}</strong>（占金融钱的 ${weights.gold}%）。可以通过正规银行的“积存金”、银行投资金条或证券账户里的黄金基金来配置，用来对冲货币贬值。`;
+      goldActionHTML = `
+        <div class="step-action">您现有的 <strong>${fmt(gold)}</strong> 黄金仓位比例刚刚好。</div>
+        <div class="plan-box">
+          <strong>📋 后续定期配置方案：</strong>存量安心拿着，以后每个月发工资后顺手定投 <strong>${fmt(mGoldOnly)}/月</strong> 积存金即可。
+        </div>
+      `;
     }
 
     document.getElementById('actionStepsContainer').innerHTML = `
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第一步 · 保住生活底线</span><span class="step-title">留够“1年内随时要用的应急活钱”：约 ${fmt(targetCash)}</span></div>
-        <div class="step-action">您现在手头现金存款有 <strong>${fmt(cash)}</strong>，测算建议保留约 <strong>${fmt(targetCash)}</strong>（够全家正常生活 ${totalExpense > 0 ? (targetCash/totalExpense).toFixed(1) : '12'} 个月）在随取随用的零钱理财或活期里。${diffCash < -1000 ? `多出来的约 <strong>${fmt(Math.abs(diffCash))}</strong> 活钱不要全趴在活期吃低息，可以按下面几步慢慢挪去赚更高一点的收益。` : `如果目前活钱还不够数，每个月发工资先紧着把这个口袋填满。`}</div>
+        <div class="step-header"><span class="step-num">第一步 · 保住生活底线</span><span class="step-title">留够“1年内随时要用的应急活钱”：目标约 ${fmt(targetCash)}</span></div>
+        <div class="step-action">您现在手头现金存款有 <strong>${fmt(cash)}</strong>，测算建议保留约 <strong>${fmt(targetCash)}</strong>（够全家正常生活 ${totalExpense > 0 ? (targetCash/totalExpense).toFixed(1) : '12'} 个月）在随取随用的零钱理财或活期里。</div>
+        ${cashPlanHTML}
         <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>${bankSplitTip}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第二步 · 攒稳当利息</span><span class="step-title">建好“3~5年不用的安稳底仓”：约 ${fmt(targetBond)}</span></div>
-        <div class="step-action">${bondActionText}</div>
+        <div class="step-header"><span class="step-num">第二步 · 攒稳当利息</span><span class="step-title">建好“3~5年不用的安稳底仓”：目标约 ${fmt(targetBond)}</span></div>
+        ${bondPlanHTML}
         <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>${bondPitfall}</div>
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第三步 · 跑赢物价上涨</span><span class="step-title">打理“5年以上不动的长线钱”：约 ${fmt(targetEquity)}</span></div>
+        <div class="step-header"><span class="step-num">第三步 · 跑赢物价上涨</span><span class="step-title">打理“5年以上不动的长线钱”：目标约 ${fmt(targetEquity)}</span></div>
         ${equityActionHTML}
       </div>
 
       <div class="step-card">
-        <div class="step-header"><span class="step-num">第四步 · 极端风险保险</span><span class="step-title">配一点“避险压箱底黄金”：约 ${fmt(targetGold)}</span></div>
-        <div class="step-action">${goldActionText}</div>
+        <div class="step-header"><span class="step-num">第四步 · 极端风险保险</span><span class="step-title">配一点“避险压箱底黄金”：目标约 ${fmt(targetGold)}</span></div>
+        ${goldActionHTML}
         <div class="pitfall-box"><strong>⚠️ 大白话避坑提醒：</strong>买黄金有三个大忌：第一，<strong>别去金店买高溢价的黄金首饰当投资</strong>，买的时候每克多花一百多块工费，卖的时候按原料价回收直接亏一大截，要买就买银行投资金条、积存金或黄金基金；第二，黄金价格也会大起大落，家里配个10%左右就够了；第三，<strong>绝对不要碰带杠杆的炒黄金、外盘期货</strong>，十赌九输！</div>
       </div>
     `;
@@ -1386,7 +1537,6 @@
     }
   }
 
-  // 辅助：单笔资金复利计算函数
   function calcCompound(startPrincipal, monthlyAdd, annualRatePct, years) {
     const r = (annualRatePct / 100) / 12;
     let total = startPrincipal;
@@ -1435,7 +1585,6 @@
     const profitPctOfTotal = curTotal > 0 ? (totalProfit / curTotal) * 100 : 0;
     const lastYearMonthlyPassive = (curTotal * (annualRate / 100)) / 12;
 
-    // 更新顶部标题及 4 张憧憬汇总卡片
     document.getElementById('simEndTotal').innerText = `${years}年后连本带利测算总值：${fmt(curTotal)}`;
     document.getElementById('dreamEndLbl').innerText = `${years}年后连本带利总家底`;
     document.getElementById('dreamTotalVal').innerText = fmt(curTotal);
@@ -1451,8 +1600,6 @@
 
     document.getElementById('dreamPassiveMonth').innerText = fmt(lastYearMonthlyPassive) + '/月';
 
-    // 拆解“四笔钱”各自在理想状态下的本金与收益贡献
-    // 基准假设收益率（随用户滑块 annualRate 同比缩放，确保分项合计逻辑自洽）
     const baseRates = { cash: 1.6, bond: 3.0, equity: 6.8, gold: 4.5 };
     const weightedBase =
       (currentWeights.cash / 100) * baseRates.cash +
@@ -1498,9 +1645,7 @@
       `;
     }).join('');
 
-    // 生成关键年份里程碑明细表
     const candidateYears = [1, 2, 3, 5, 8, 10, 15, 20, 25, 30].filter(y => y < years);
-    // 最多取 5 个中间节点 + 最终目标年份
     const step = Math.max(1, Math.ceil(candidateYears.length / 5));
     const milestoneYears = candidateYears.filter((_, idx) => idx % step === 0);
     milestoneYears.push(years);
@@ -1520,7 +1665,6 @@
       `;
     }).join('');
 
-    // 绘制折线图
     const canvas = document.getElementById('growthCanvas');
     const ctx = canvas.getContext('2d');
     const W = canvas.width;
@@ -1587,7 +1731,6 @@
     ctx.fill();
   }
 
-  // 一键导出高清长图 PNG
   async function exportReportImage(btnEl) {
     const target = document.getElementById('printableReportArea');
     const oldText = btnEl.innerHTML;
@@ -1619,7 +1762,6 @@
     }
   }
 
-  // 一键导出 / 打印为 PDF
   function exportReportPDF() {
     window.print();
   }
