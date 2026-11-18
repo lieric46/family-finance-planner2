@@ -76,25 +76,6 @@
     justify-content: space-between;
     align-items: center;
   }
-  .presets {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .preset-btn {
-    background: #f9fafb;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: left;
-  }
-  .preset-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
   .form-group { margin-bottom: 13px; }
   .form-group label {
     display: flex;
@@ -125,11 +106,15 @@
     font-size: 12px;
     font-weight: 700;
     color: var(--muted);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 16px 0 10px;
     padding-top: 10px;
     border-top: 1px dashed var(--border);
+  }
+  .section-divider.first {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
   .btn-analyze {
     width: 100%;
@@ -163,6 +148,33 @@
   .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   .kpi-value { font-size: 18px; font-weight: 800; color: var(--text); }
   .kpi-sub { font-size: 11px; margin-top: 3px; font-weight: 600; }
+
+  /* 财务状况画像判定卡 */
+  .profile-verdict {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .profile-verdict-left { flex: 1; min-width: 240px; }
+  .profile-verdict-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+  .profile-verdict-name { font-size: 19px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .profile-verdict-summary { font-size: 13px; color: #4b5563; margin-top: 4px; }
+  .profile-pill {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: var(--primary-light);
+    color: var(--primary);
+  }
 
   .strategy-banner {
     padding: 16px 18px;
@@ -275,7 +287,7 @@
 <div class="container">
   <header>
     <h1>家庭财务与宏观化债周期智能诊断系统</h1>
-    <p>结合低利率与债务重组周期，动态重算家庭现金流、四盘资产配置比例、立即行动步骤与专属避坑清单</p>
+    <p>结合低利率与债务重组周期，自动判定家庭财务画像并动态生成四盘资产配置、立即行动步骤与专属避坑清单</p>
     <span class="privacy-badge">🔒 纯本地浏览器实时运算，财务数据绝不上传服务器</span>
   </header>
 
@@ -287,15 +299,7 @@
         <span style="font-size:12px;color:var(--primary);font-weight:600;">实时动态联动</span>
       </div>
 
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">快速切换典型画像测试（观察右侧方案彻底重构）：</div>
-      <div class="presets">
-        <button class="preset-btn" onclick="applyPreset('standard')">💼 当前标准型 (100万存款)</button>
-        <button class="preset-btn" onclick="applyPreset('highDebt')">⚠️ 高负债承压型 (月供高)</button>
-        <button class="preset-btn" onclick="applyPreset('tight')">🚨 现金流吃紧型 (结余低)</button>
-        <button class="preset-btn" onclick="applyPreset('hnw')">👑 高净值阶梯型 (500万)</button>
-      </div>
-
-      <div class="section-divider">存量资产与负债</div>
+      <div class="section-divider first">存量资产与负债</div>
       <div class="form-group">
         <label>现有可用现金/定期存款 (元)</label>
         <input type="number" id="cashSavings" value="1000000" step="10000" oninput="runEngine()">
@@ -303,14 +307,6 @@
       <div class="form-group">
         <label>剩余总负债/贷款余额 (元)</label>
         <input type="number" id="totalDebt" value="320000" step="10000" oninput="runEngine()">
-      </div>
-      <div class="form-group">
-        <label>风险偏好等级</label>
-        <select id="riskProfile" onchange="runEngine()">
-          <option value="conservative">保守型（绝不接受本金明显回撤）</option>
-          <option value="balanced" selected>稳健平衡型（可接受小幅波动换取跑赢通胀）</option>
-          <option value="growth">积极进取型（追求长期资产增值与红利复利）</option>
-        </select>
       </div>
 
       <div class="section-divider">每月家庭收入明细</div>
@@ -329,7 +325,7 @@
 
       <div class="section-divider">每月刚性支出与还贷</div>
       <div class="form-group">
-        <label>学费/房贷等月供 (元) <span class="val-tag" id="lblLoan">¥9,200</span></label>
+        <label>每月贷款月供（房贷/车贷/消费贷等） <span class="val-tag" id="lblLoan">¥9,200</span></label>
         <input type="number" id="loanPayment" value="9200" step="200" oninput="syncSlider('loanPayment','rngLoan');runEngine()">
         <input type="range" id="rngLoan" min="0" max="40000" step="200" value="9200" oninput="syncInput('rngLoan','loanPayment');runEngine()">
       </div>
@@ -347,6 +343,16 @@
         <label>餐饮购物等其他杂项 (元) <span class="val-tag" id="lblMisc">¥3,500</span></label>
         <input type="number" id="miscExpense" value="3500" step="100" oninput="syncSlider('miscExpense','rngMisc');runEngine()">
         <input type="range" id="rngMisc" min="0" max="20000" step="100" value="3500" oninput="syncInput('rngMisc','miscExpense');runEngine()">
+      </div>
+
+      <div class="section-divider">个人投资偏好设定</div>
+      <div class="form-group">
+        <label>风险偏好等级</label>
+        <select id="riskProfile" onchange="runEngine()">
+          <option value="conservative">保守型（绝不接受本金明显回撤）</option>
+          <option value="balanced" selected>稳健平衡型（可接受小幅波动换取跑赢通胀）</option>
+          <option value="growth">积极进取型（追求长期资产增值与红利复利）</option>
+        </select>
       </div>
 
       <button class="btn-analyze" onclick="runEngine(true)">🔄 重新执行 AI 深度诊断与重算</button>
@@ -378,10 +384,22 @@
         </div>
       </div>
 
+      <!-- 系统自动判定当前家庭财务状况画像 -->
+      <div class="profile-verdict" id="profileVerdictCard">
+        <div class="profile-verdict-left">
+          <div class="profile-verdict-label">📋 系统根据您录入的信息自动判定，您当前的家庭财务状况属于：</div>
+          <div class="profile-verdict-name">
+            <span id="profileName">高结余·稳健成长型家庭</span>
+            <span class="profile-pill" id="profileRiskTag">稳健平衡偏好</span>
+          </div>
+          <div class="profile-verdict-summary" id="profileSummary">现金流造血能力强，存量安全垫充足，负债压力可控，具备向多元化资产配置转型的优良条件。</div>
+        </div>
+      </div>
+
       <!-- 2. AI 实时深度诊断与动态配置模型 -->
       <div class="card">
         <div class="card-title">
-          <span>2. AI 实时财务体检与化债周期配置模型</span>
+          <span>2. 实时财务体检与化债周期资产配置模型</span>
           <span id="regimeBadge" style="font-size:12px;color:var(--primary);font-weight:700;">动态匹配中</span>
         </div>
 
@@ -460,31 +478,6 @@
     document.getElementById(inpId).value = document.getElementById(rngId).value;
   }
 
-  function applyPreset(type) {
-    const presets = {
-      standard: { cash: 1000000, debt: 320000, risk: 'balanced', my: 25000, sp: 8000, ex: 30500, loan: 9200, rent: 2500, car: 3000, misc: 3500 },
-      highDebt: { cash: 350000, debt: 1800000, risk: 'conservative', my: 22000, sp: 10000, ex: 3000, loan: 16500, rent: 0, car: 3500, misc: 4500 },
-      tight:    { cash: 60000, debt: 150000, risk: 'conservative', my: 12000, sp: 6000, ex: 0, loan: 4500, rent: 3800, car: 2500, misc: 5200 },
-      hnw:      { cash: 5000000, debt: 0, risk: 'growth', my: 45000, sp: 20000, ex: 35000, loan: 0, rent: 8000, car: 5000, misc: 8000 }
-    };
-    const p = presets[type];
-    document.getElementById('cashSavings').value = p.cash;
-    document.getElementById('totalDebt').value = p.debt;
-    document.getElementById('riskProfile').value = p.risk;
-    document.getElementById('myIncome').value = p.my;
-    document.getElementById('spouseIncome').value = p.sp;
-    document.getElementById('extraIncome').value = p.ex;
-    document.getElementById('loanPayment').value = p.loan;
-    document.getElementById('rentPayment').value = p.rent;
-    document.getElementById('carUtility').value = p.car;
-    document.getElementById('miscExpense').value = p.misc;
-    syncSlider('loanPayment','rngLoan');
-    syncSlider('rentPayment','rngRent');
-    syncSlider('carUtility','rngCar');
-    syncSlider('miscExpense','rngMisc');
-    runEngine(true);
-  }
-
   function runEngine(animate = false) {
     const cash = Math.max(0, parseFloat(document.getElementById('cashSavings').value) || 0);
     const debt = Math.max(0, parseFloat(document.getElementById('totalDebt').value) || 0);
@@ -539,7 +532,17 @@
       runTag.style.color = 'var(--green)';
     }
 
-    // 核心决策引擎：根据真实财务结构动态切换 5 种策略模式与资产比例
+    const riskTextMap = {
+      conservative: '保守防御偏好',
+      balanced: '稳健平衡偏好',
+      growth: '积极进取偏好'
+    };
+    document.getElementById('profileRiskTag').innerText = riskTextMap[risk];
+
+    // 核心决策引擎：判定家庭财务状况画像 + 切换 5 种策略模式与资产比例
+    let profileName = '';
+    let profileSummary = '';
+    let profileColor = 'var(--primary)';
     let regime = '';
     let bannerClass = '';
     let title = '';
@@ -548,6 +551,9 @@
     let expectedRate = 4.2;
 
     if (netSavings < 0 || runwayMonths < 4) {
+      profileName = '🚨 流动性吃紧·现金流防线预警型';
+      profileSummary = `当前月度结余为 ${fmt(netSavings)}，存量资金仅够支撑 ${runwayMonths.toFixed(1)} 个月刚性开销，家庭抗风险缓冲垫偏薄，需优先重建现金防线。`;
+      profileColor = 'var(--red)';
       regime = '模式一：现金流防线危机与流动性急救模式';
       bannerClass = 'danger';
       title = '核心诊断：流动性安全垫不足，严禁任何高风险投资！';
@@ -555,6 +561,9 @@
       weights = { cash: 85, bond: 15, equity: 0, gold: 0 };
       expectedRate = 2.0;
     } else if (debtToIncome > 40 || (debt > cash * 1.5 && debt > 500000)) {
+      profileName = '⚠️ 高负债承压·债务优化优先型';
+      profileSummary = `每月贷款月供占总收入 ${debtToIncome.toFixed(1)}%（剩余负债 ${fmt(debt)}），偿债压力对现金流占用较高，适合“高防御 + 逐步降杠杆”策略。`;
+      profileColor = 'var(--amber)';
       regime = '模式二：高负债压降与防御型资产配置模式';
       bannerClass = 'warn';
       title = '核心诊断：偿债负担较重，建议“防守优先 + 适度提前还贷”';
@@ -562,6 +571,9 @@
       weights = risk === 'growth' ? { cash: 40, bond: 40, equity: 15, gold: 5 } : { cash: 45, bond: 45, equity: 5, gold: 5 };
       expectedRate = 3.1;
     } else if (cash < 300000) {
+      profileName = '🌱 早期财富积累·蓄水池筑基型';
+      profileSummary = `收支健康（储蓄率 ${saveRate.toFixed(1)}%），造血能力良好，但现有存量资金（${fmt(cash)}）体量尚浅，处于靠每月结余稳步滚雪球阶段。`;
+      profileColor = 'var(--amber)';
       regime = '模式三：早期财富积累与安全垫筑基模式';
       bannerClass = 'warn';
       title = '核心诊断：收支健康但存量蓄水池尚浅，重点在“增量定投”';
@@ -569,6 +581,9 @@
       weights = risk === 'conservative' ? { cash: 55, bond: 35, equity: 5, gold: 5 } : { cash: 45, bond: 30, equity: 20, gold: 5 };
       expectedRate = 3.8;
     } else if (cash >= 3000000) {
+      profileName = '👑 高净值资产·跨周期阶梯配置型';
+      profileSummary = `拥有 ${fmt(cash)} 丰厚存量资金及每月 ${fmt(netSavings)} 强劲结余，核心任务是摆脱普通存款利率下行陷阱，构建机构级跨周期组合。`;
+      profileColor = 'var(--purple)';
       regime = '模式四：高净值跨周期阶梯化债配置模式';
       bannerClass = 'vip';
       title = '核心诊断：高净值资产体量，核心矛盾是“对抗利率下行与资产荒”';
@@ -584,6 +599,9 @@
         expectedRate = 5.8;
       }
     } else {
+      profileName = '✅ 高结余·稳健成长型家庭';
+      profileSummary = `月度储蓄率高达 ${saveRate.toFixed(1)}%（月结余 ${fmt(netSavings)}），存量安全垫充足且负债率健康，正处于由“单一存款”向“攻守兼备资产配置”升级的最佳窗口。`;
+      profileColor = 'var(--green)';
       regime = '模式五：标准哑铃型化债周期均衡配置模式';
       bannerClass = 'good';
       title = '核心诊断：现金流极其充沛，适合从“单一存款”向“攻守哑铃”转型';
@@ -602,8 +620,14 @@
 
     // 副业占比过高动态提醒
     if (stableRatio < 55 && exInc > 0) {
-      desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性高于固定工资，因此防守现金垫已为您自动上调冗余保护。`;
+      desc += `<br><span style="color:#b45309;font-weight:600;">⚡ 收入结构提示：</span>您的额外/副业收入占总收入的 <strong>${(100 - stableRatio).toFixed(0)}%</strong>，波动性高于固定工资，因此防守现金垫已为您自动保留充足冗余保护。`;
     }
+
+    // 更新财务状况画像判定卡
+    const pNameEl = document.getElementById('profileName');
+    pNameEl.firstElementChild.innerText = profileName;
+    pNameEl.firstElementChild.style.color = profileColor;
+    document.getElementById('profileSummary').innerText = profileSummary;
 
     document.getElementById('regimeBadge').innerText = regime;
     const banner = document.getElementById('strategyBanner');
